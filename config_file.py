@@ -42,7 +42,7 @@ remove_ztf_peak_periodogram_days = []   # 1
 # 6th bit: integral of the excess
 # 7th bit: plot image
 
-ids_to_calculate = np.array(["545885365456484096", "121445908306951168", "6243832556518476288"]).astype(str)
+ids_to_calculate = np.array(["1836728199915208576", "121445908306951168", "6243832556518476288"]).astype(str)
 
 detrend = False
 do_fit_with_constant_period = False
