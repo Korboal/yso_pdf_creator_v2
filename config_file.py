@@ -5,12 +5,12 @@ import numpy as np
 file_category = "all"               # Purely for naming purposes of the outputs. Useful if need different samples
 gaia_table_version = 45             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
 save_pdfs = False                   # If want to save images as PDFs, increases the run time quite a bit
-debug_mode = True                   # Debug mode: show parameters and images, do NOT save anything
+debug_mode = False                   # Debug mode: show parameters and images, do NOT save anything
 save_images_if_not_debug = False    # If want to save images, while not debugging
 use_vizier_data = False             # If want to also plot data from Vizier
 
 lightcurve_fit = False       # Do light curve fit for Gaia data
-ztf_lightcurve_fit = True    # Do light curve fit for ZTF curves
+ztf_lightcurve_fit = False    # Do light curve fit for ZTF curves
 do_multiband_periodogram = False
 
 neowise_lightcurve_fit = False
@@ -20,7 +20,7 @@ do_pdf_creation = False     # Make PDFs for each star with their information and
 do_bb_fit = False           # Do fits using my own blackbody fits (bad)
 save_bb_variables = False   # Save variables for blackbody fit
 do_sedfitter = False        # Use SEDFitter to fit star's models. Only on fast PC
-find_nebula = False
+find_nebula = True
 
 do_irsa_astroquery = False
 do_xmm_astroquery = False
@@ -42,11 +42,11 @@ remove_ztf_peak_periodogram_days = []   # 1
 # 6th bit: integral of the excess
 # 7th bit: plot image
 
-ids_to_calculate = np.array(["1836728199915208576", "121445908306951168", "6243832556518476288"]).astype(str)
+ids_to_calculate = np.array([]).astype(str)
 
 detrend = False
 do_fit_with_constant_period = False
-period_manual = 0
+period_manual = 0  # 9.353221424477987*2
 
 if not debug_mode:      # Save images, variables, do not show anything
     matplotlib.use('Agg')
@@ -313,6 +313,7 @@ input_folder_nebulae = "mol_clouds/"
 output_textfile_nebulae = f"output_textfiles/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_nebulae_data.txt"
 output_textfile_nebulae_star_pm = f"output_textfiles/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_nebulae_with_star_pm.txt"
 output_textfile_nebulae_only_pm = f"output_textfiles/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_nebulae_only_pm.txt"
+input_pm_nebulae = "mol_clouds/pm_nebula/mol_clouds_gaianew_v2.txt"
 
 # Wavelength in meters
 irac1 = 3.55 * pow(10, -6)

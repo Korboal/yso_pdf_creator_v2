@@ -20,7 +20,7 @@ matplotlib.use('macosx')
 ls_freq_start = 0.001  # 1000 days
 ls_freq_stop = 0.1  # 10 days
 ls_freq_stop = 2  # 0.5 day
-ls_freq_stop = 0.5  # 2 days
+#ls_freq_stop = 0.5  # 2 days
 
 # ls_freq_start = 0.5  # 2 days   for very short term variability
 # ls_freq_stop = 100  # 14.4 min  for very short term variability
@@ -650,6 +650,41 @@ class LightCurve:
         plt.show()
         plt.close('all')
 
+    def draw_spectral_window(self):
+        """
+        Draws spectral window. Normalises LS to be in units of magnitude.
+        """
+        spectral_win_y = np.ones(np.size(self.data_t))
+
+        _, powers = calculate_periodogram_powers(self.data_t, spectral_win_y, ls_freqs_input, False, False, "psd")
+
+        plt.plot(ls_freqs_input, 2 * np.sqrt(powers / self.data_length), linewidth=2, color='black',
+                 label='Spectral window')
+
+        prepare_plot(f'Spectral window {round(1 / np.max(self.ls_freqs), 1)} to {round(1 / np.min(self.ls_freqs), 0)} days', "Frequency [1/days]", "Amplitude [mag]", True, False,
+                     invert_yaxis=False, xlim=(np.min(self.ls_freqs), np.max(self.ls_freqs)), ylim=(0, None))
+
+    def choose_spectral_window(self, min_time: float, max_time: float):
+        if max_time < min_time:
+            min_time, max_time = max_time, min_time
+
+        args_to_keep = np.logical_and.reduce((self.data_t >= min_time, self.data_t <= max_time))
+        self.data_t = self.data_t[args_to_keep]
+        self.data_y = self.data_y[args_to_keep]
+        self.data_error = self.data_error[args_to_keep]
+        self.data_length = np.size(self.data_t)
+
+    def draw_folded_with_colored_time(self):
+        x = (self.data_t % abs(self.period_fit)) / abs(self.period_fit)
+        #plt.errorbar(x, y, yerr=error, fmt=fmt, label=label, linewidth=linewidth, color=color, alpha=alpha)
+
+        cm = plt.cm.get_cmap('inferno')
+
+        z = self.data_t
+        sc = plt.scatter(x, self.data_y, c=z, cmap=cm, linewidth=1)
+        plt.colorbar(sc, label='Time [days]')
+        prepare_plot(f"Folded {self.light_curve_name} {self.band_name}", f"Phase with period {round(self.period_fit, 3)} d", "Band [mag]", True, False, invert_yaxis=True)
+
 
 class LightCurveGaia(LightCurve):
     def __init__(self, parsed_light_curve_votable, band: str, light_curve_name="Gaia", save_image=False,
@@ -771,7 +806,7 @@ class LightCurveZTF(LightCurve):
             yy = []
             error = []
         else:
-            tt = data[0]
+            tt = np.asarray(data[0])
             yy = data[1]
             error = data[2]
         return tt, yy, error, np.size(tt)
@@ -1572,7 +1607,7 @@ def slider_folded_light_curve(lightcurve: LightCurve, valmin: float, valmax: flo
 
     # Create the figure and the line that we will manipulate
     fig, ax = plt.subplots()
-    line, = plt.plot((lightcurve.data_t % init_period) / init_period, lightcurve.data_y, 'o')
+    line, = plt.plot((np.asarray(lightcurve.data_t) % init_period) / init_period, lightcurve.data_y, 'o')
     ax.set_xlabel('Time [s]')
 
     # adjust the main plot to make room for the sliders
@@ -1834,7 +1869,11 @@ def plot_g_r_variation(light_curve_g: LightCurveZTF, light_curve_r: LightCurveZT
     draw_points_err_bar(light_curve_r.data_t, (light_curve_r.data_y - np.mean(light_curve_r.data_y)) / np.mean(light_curve_r.data_y) * -1 + np.mean(g_r) - 0.3, np.zeros(np.size(light_curve_r.data_y)), "Offset light curve", linewidth=0.01, color='red', alpha=0.1, fmt='.')
     prepare_plot("ZTF g-r variation with time", "Time [days]", "g-r [mag]", True, False, invert_yaxis=False)
 
-    draw_points_err_bar(g_r, mag_r, np.zeros(np.size(binned_time)), None, linewidth=1, fmt='.')
+    #draw_points_err_bar(g_r, mag_r, np.zeros(np.size(binned_time)), None, linewidth=1, fmt='.')
+    cm = plt.cm.get_cmap('brg')
+    z = binned_time
+    sc = plt.scatter(g_r, mag_r, c=z, cmap=cm, linewidth=1)
+    plt.colorbar(sc, label='Time [days]')
     prepare_plot("ZTF g-r variation with ZTF r", "g-r [mag]", "r [mag]", True, False, invert_yaxis=True)
 
 

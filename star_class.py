@@ -228,8 +228,6 @@ class Star:
 
             self.gaia_g_light_curve.draw_fitted_light_curve(image_output_png=self.fitted_curve_gaia_g_output_png, image_output_pdf=self.fitted_curve_gaia_g_output_pdf, do_second_fit=True, second_fit_period=self.period_g2, second_fit_name="GDR2")
 
-
-
             self.gaia_g_light_curve.draw_frequency_gram(image_output_png=self.output_frequency_periodogram_gaia_g_png, image_output_pdf=self.output_frequency_periodogram_gaia_g_pdf,
                                                         second_fit_periods=[self.period_g2], second_fit_names=["GDR2"])
 
@@ -412,6 +410,16 @@ class Star:
         self.ztf_i_light_curve = LightCurveZTF(ztf_votable_data, "i", save_image=save_pictures, save_pdfs=cf.save_pdfs,
                                                show_image=show_pictures)
 
+        """max_time = np.max(self.ztf_r_light_curve.data_t)
+        dt = int(50)
+        for i in range(0, int(max_time), dt):
+            self.ztf_r_light_curve.choose_spectral_window(i, i+dt)
+            self.ztf_r_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
+            self.ztf_r_light_curve.draw_folded_light_curve(image_output_png=self.ztf_output_pictures_folded_ztf_r)
+            self.ztf_r_light_curve = LightCurveZTF(ztf_votable_data, "r", save_image=save_pictures,
+                                                   save_pdfs=cf.save_pdfs,
+                                                   show_image=show_pictures)"""
+
         #difference_between_gr = self.ztf_g_light_curve.mean - self.ztf_r_light_curve.mean
         #if np.size(self.ztf_r_light_curve.data_y) > 0:
         #    self.ztf_r_light_curve.data_y = self.ztf_r_light_curve.data_y + difference_between_gr
@@ -426,7 +434,7 @@ class Star:
             self.ztf_r_light_curve.remove_long_term_trend()
             self.ztf_i_light_curve.remove_long_term_trend()
 
-        #lightcurve_class.slider_folded_light_curve(self.ztf_g_light_curve, 18, 20)  # 9.353221424477987
+        lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 25, 35)  # 9.353221424477987
 
         """lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 150, 500)
         #lightcurve_class.slider_folded_light_curve_freq(self.ztf_g_light_curve, 0.05, 1)
@@ -449,6 +457,12 @@ class Star:
         self.ztf_g_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
         self.ztf_i_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
 
+        self.ztf_r_light_curve.draw_spectral_window()
+
+        #self.gaia_g_light_curve.draw_folded_with_colored_time()
+        #self.ztf_g_light_curve.draw_folded_with_colored_time()
+        #self.ztf_r_light_curve.draw_folded_with_colored_time()
+
         lightcurve_class.plot_g_r_variation(self.ztf_g_light_curve, self.ztf_r_light_curve)
 
         #self.ztf_r_light_curve.fitting_example_frequency_periodogram()
@@ -461,9 +475,9 @@ class Star:
 
 
         # 2 PERIODS
-        self.gaia_g_light_curve.fit_light_curve_using_two_periods(period1=161, period2=81)
-        self.ztf_g_light_curve.fit_light_curve_using_two_periods(period1=161, period2=81)
-        self.ztf_r_light_curve.fit_light_curve_using_two_periods(period1=161, period2=81)
+        #self.gaia_g_light_curve.fit_light_curve_using_two_periods(period1=161, period2=81)
+        #self.ztf_g_light_curve.fit_light_curve_using_two_periods(period1=161, period2=81)
+        #self.ztf_r_light_curve.fit_light_curve_using_two_periods(period1=161, period2=81)
 
         fit_func_g_with_gaia_g, error_g_with_gaia_g, amp_g_with_gaia_g, nrmse_g_with_gaia_g = self.ztf_g_light_curve.draw_folded_light_curve_with_other_function(self.gaia_g_light_curve.fit_result,
                                                                                "Gaia G",

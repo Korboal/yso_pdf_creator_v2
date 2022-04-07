@@ -244,7 +244,7 @@ def main():
 
         output_time_to_print, time_before, recent_time_length = tools.time_counter(i, time_before, np.size(ids),
                                                                                    recent_time_length)
-        print(f"{star_object.source_id, int(i / np.size(ids) * 100)}% {output_time_to_print}")  # Time count here
+        print(f"{star_object.source_id} {int(i / np.size(ids) * 100)}% {output_time_to_print}")  # Time count here
 
         del star_object     # Deleting each star class object to potentially save memory
 

@@ -768,7 +768,7 @@ def calculate_ir_slope(star_obj: Star, print_variables: bool, show_images: bool,
         if ir_slope_error > -98:
             wavelengths_array = np.linspace(cf.ir_slope_start, ir_slope_end, 10 ** 2)
             model_fit = model_function_sed_slope_in_linear_space(wavelengths_array, m, c)
-            ax.loglog(wavelengths_array * pow(10, 6), model_fit, label="SED slope", color="red")
+            ax.loglog(wavelengths_array * pow(10, 6), model_fit, label=f"SED slope {round(m, 2)}", color="red")
 
         ticks_array = tools.get_ticks_for_plot(max_x)
         ax.set_xticks(ticks_array)
@@ -780,6 +780,8 @@ def calculate_ir_slope(star_obj: Star, print_variables: bool, show_images: bool,
 
         if save_images:
             plt.savefig(star_obj.ir_slope_directory_png)
+            if cf.save_pdfs:
+                plt.savefig(star_obj.ir_slope_directory_pdf)
         if show_images:
             plt.show()
         plt.close('all')
