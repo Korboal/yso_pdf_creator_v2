@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.optimize import minimize
 
 default_nebula_size_pc = 5
 #nebulae_data = tools.load_data("neb1.txt")
@@ -66,7 +65,6 @@ def find_nebula_relation(ra, dec, dist, nebulae_data):
     else:
         return closest_nebula, "_", min_dist + nebula_size, 0.0
 
-
 def find_nebula(star_obj, nebulae_data, filename_to_save):
     from tools import save_in_txt_topcat
     ra = star_obj.ra
@@ -74,6 +72,48 @@ def find_nebula(star_obj, nebulae_data, filename_to_save):
     dist = star_obj.distance_ge3
     closest_nebula, related_nebula_name, distance_to_nebula_center, confidence = find_nebula_relation(ra, dec, dist, nebulae_data)
     save_in_txt_topcat([star_obj.source_id, ra, dec, star_obj.pmra, star_obj.pmdec, closest_nebula, related_nebula_name, distance_to_nebula_center, confidence], filename_to_save)
+
+
+def find_closest_nebulae_visual(ra_star, dec_star, dist_star, nebulae_data):
+    nebulae_dia = nebulae_data[:, 3].astype(float)
+    #nebulae_sizes = np.where(nebulae_sizes > 0, nebulae_sizes, default_nebula_size_pc)
+
+    dist_to_nebula = np.ones(np.size(nebulae_data[:, 0])) * dist_star
+
+    nebulae_sizes = dist_star * nebulae_dia * np.pi / 180
+
+    nebulae_dat_with_dist = np.array([nebulae_data[:, 0], nebulae_data[:, 1], nebulae_data[:, 2], dist_to_nebula]).transpose()
+
+    distances = find_dist_to_nebulae(ra_star, dec_star, dist_star, nebulae_dat_with_dist) - nebulae_sizes
+    min_dist_index = np.argmin(distances)
+    closest_nebula = nebulae_data[min_dist_index, 0]
+    nebula_size = nebulae_sizes[min_dist_index]
+    min_dist = distances[min_dist_index]
+    return closest_nebula, min_dist, nebula_size
+
+def find_nebula_relation_visual(ra, dec, dist, nebulae_data):
+    n = 3
+    closest_nebula, min_dist, nebula_size = find_closest_nebulae_visual(ra, dec, dist, nebulae_data)
+    max_dist_with_low_confidence = nebula_size + 10
+    if min_dist <= 0:
+        return closest_nebula, closest_nebula, min_dist + nebula_size, 1.0
+    elif min_dist <= max_dist_with_low_confidence:
+        #return str(int((min_dist + nebula_size) // nebula_size) * "?") + "_" + closest_nebula, closest_nebula, min_dist + nebula_size, 1 - int((min_dist + nebula_size) // nebula_size) / (n + 1)
+        return closest_nebula, closest_nebula, min_dist + nebula_size, 1 - int((min_dist) // ((max_dist_with_low_confidence) / n) + 1) / (n + 1)
+    else:
+        return closest_nebula, "_", min_dist + nebula_size, 0.0
+
+
+def find_nebula_visual(star_obj, nebulae_data, filename_to_save):
+    from tools import save_in_txt_topcat
+    ra = star_obj.ra
+    dec = star_obj.dec
+    dist = star_obj.distance_ge3
+    closest_nebula, related_nebula_name, distance_to_nebula_center, confidence = find_nebula_relation_visual(ra, dec, dist,
+                                                                                                      nebulae_data)
+
+    save_in_txt_topcat([star_obj.source_id, ra, dec, star_obj.pmra, star_obj.pmdec, closest_nebula, related_nebula_name,
+                        distance_to_nebula_center, confidence], filename_to_save)
 
 
 

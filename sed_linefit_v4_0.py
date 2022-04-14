@@ -691,8 +691,9 @@ def calculate_sed_excess_from_points(x: np.ndarray, y: np.ndarray, error: np.nda
         average_filter_excess_ratio = cf.dflt_no_vle
 
     if cf.debug_mode:
-        print("Biggest ratio wv and ratio:", biggest_filter_ratio_wavelength * pow(10, 6), biggest_filter_excess_ratio, "avg ratio:",
-              average_filter_excess_ratio, "Last wv and ratio:", last_filter_wavelength * pow(10, 6), last_filter_excess_ratio)
+        print(f"Biggest ratio wv and ratio: {biggest_filter_ratio_wavelength * pow(10, 6)} "
+              f"{biggest_filter_excess_ratio} avg ratio {average_filter_excess_ratio} Last wv and ratio: "
+              f"{last_filter_wavelength * pow(10, 6)} {last_filter_excess_ratio}")
 
     return [last_filter_wavelength, last_filter_excess_error, last_filter_excess_ratio,
             average_filter_excess_diff, average_filter_excess_ratio,
@@ -751,7 +752,7 @@ def calculate_ir_slope(star_obj: Star, print_variables: bool, show_images: bool,
         m, slope_error_lmfit, ir_slope_error, c = cf.dflt_no_vle, cf.dflt_no_vle, cf.dflt_no_vle, cf.dflt_no_vle
 
     if print_variables:
-        print("m:", m, "c:", c, "my slope error:", ir_slope_error, "lmfit slope error", slope_error_lmfit)
+        print(f"m: {m} c: {c} my slope error: {ir_slope_error} lmfit slope error: {slope_error_lmfit}")
 
     if show_images or save_images:  # Save/show fit
         fig, ax = plt.subplots()
@@ -919,7 +920,7 @@ def extrapolate_and_integrate_sed_excess(star_obj: Star, print_variables: bool, 
             #print("All good")
             pass
         else:
-            print(star_obj.source_id, "Too high -3 slope, reducing by", dy)
+            print(f"{star_obj.source_id} Too high -3 slope, reducing by {dy}")
             const = const - dy
             #star_obj.sed_linefit_rayleigh_jeans_const = const
             func_rayleigh_jeans_log_space = lambda xx: model_function_rayleigh_jeans_in_log_space(xx, const)

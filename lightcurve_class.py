@@ -14,13 +14,14 @@ import matplotlib
 # from matplotlib.ticker import AutoMinorLocator, AutoLocator, MultipleLocator, FormatStrFormatter
 from matplotlib.widgets import Slider, Button
 from copy import deepcopy
+from matplotlib.colors import Normalize
 
 matplotlib.use('macosx')
 
 ls_freq_start = 0.001  # 1000 days
 ls_freq_stop = 0.1  # 10 days
 ls_freq_stop = 2  # 0.5 day
-#ls_freq_stop = 0.5  # 2 days
+ls_freq_stop = 0.5  # 2 days
 
 # ls_freq_start = 0.5  # 2 days   for very short term variability
 # ls_freq_stop = 100  # 14.4 min  for very short term variability
@@ -451,7 +452,7 @@ class LightCurve:
                              image_output_png=image_output_png, image_output_pdf=image_output_pdf,
                              save_pdf=self.save_pdfs, invert_yaxis=False)
 
-    def draw_folded_light_curve(self, image_output_png=None, image_output_pdf=None):
+    def draw_folded_light_curve(self, image_output_png=None, image_output_pdf=None, draw_fit_function=True):
         """
         Draws the folded light curve using fitted period. If not fit is done, then tries to fit. If not successful,
         then draws original light curve without folding
@@ -464,8 +465,10 @@ class LightCurve:
             if self.fitting_successful:
                 draw_points_err_bar(self.data_t, self.data_y, self.data_error, label="Data",
                                     folding_period=self.period_fit)
-                plot_function(self.data_t, self.fit_result["fitfunc"], "Fit curve", folding_period=self.period_fit,
-                              color='r')
+
+                if draw_fit_function:
+                    plot_function(self.data_t, self.fit_result["fitfunc"], "Fit curve", folding_period=self.period_fit,
+                                  color='r')
 
                 prepare_plot(f"Folded {self.light_curve_name} {self.band_name}",
                              f"Phase with period {round(self.period_fit, 2)} days",
@@ -1829,7 +1832,7 @@ def plot_function(time: np.ndarray, function: Callable[[List[float]], List[float
 
 
 def prepare_plot(title: str, xlabel: str, ylabel: str, show_image: bool, save_image: bool, image_output_png=None,
-                 image_output_pdf=None, save_pdf=False, invert_yaxis=True, xlim=None, ylim=None):
+                 image_output_pdf=None, save_pdf=False, invert_yaxis=True, xlim=None, ylim=None, show_legend=True):
     """
     Prepares plot and shows it or saves it
     :param title: Title of the plot
@@ -1843,9 +1846,11 @@ def prepare_plot(title: str, xlabel: str, ylabel: str, show_image: bool, save_im
     :param invert_yaxis: Whether to invert y-axis, default True
     :param xlim: Tuple of the x limits, default none
     :param ylim: Tuple of the y limits, default none
+    :param show_legend: show legend or not, default True
     """
     plt.title(title)
-    plt.legend(loc="best")
+    if show_legend:
+        plt.legend(loc="best")
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.xlim(xlim)
@@ -1863,23 +1868,56 @@ def prepare_plot(title: str, xlabel: str, ylabel: str, show_image: bool, save_im
 
 
 def plot_g_r_variation(light_curve_g: LightCurveZTF, light_curve_r: LightCurveZTF):
-    binned_time, g_r, mag_r = g_r_variation(light_curve_g, light_curve_r)
+    binned_time, mag_r, error_r, g_r, g_r_error = g_r_variation(light_curve_g, light_curve_r)
 
-    draw_points_err_bar(binned_time, g_r, np.zeros(np.size(binned_time)), "g-r", linewidth=2, fmt='.')
-    draw_points_err_bar(light_curve_r.data_t, (light_curve_r.data_y - np.mean(light_curve_r.data_y)) / np.mean(light_curve_r.data_y) * -1 + np.mean(g_r) - 0.3, np.zeros(np.size(light_curve_r.data_y)), "Offset light curve", linewidth=0.01, color='red', alpha=0.1, fmt='.')
-    prepare_plot("ZTF g-r variation with time", "Time [days]", "g-r [mag]", True, False, invert_yaxis=False)
+    draw_points_err_bar(binned_time, g_r, g_r_error, "g-r", linewidth=2, fmt='.')
+    #draw_points_err_bar(light_curve_r.data_t, (light_curve_r.data_y - np.mean(light_curve_r.data_y)) / np.mean(light_curve_r.data_y) * -1 + np.mean(g_r) - 0.3, np.zeros(np.size(light_curve_r.data_y)), "Offset light curve", linewidth=0.01, color='red', alpha=0.1, fmt='.')
+    prepare_plot(None, "Time [days]", "g-r [mag]", True, False, invert_yaxis=False, show_legend=False)
+
+    a_ztf_g = 1.1837965102373564
+    a_ztf_r = 0.8352016801352571
+
+    # r = m * (g-r)
+    # extinction_vector_slope = a_ztf_r / (a_ztf_g - a_ztf_r)
 
     #draw_points_err_bar(g_r, mag_r, np.zeros(np.size(binned_time)), None, linewidth=1, fmt='.')
     cm = plt.cm.get_cmap('brg')
     z = binned_time
-    sc = plt.scatter(g_r, mag_r, c=z, cmap=cm, linewidth=1)
+
+    #cmap = cm.viridis
+    norm = Normalize(vmin=z.min(), vmax=z.max())
+
+    plt.errorbar(g_r, mag_r, xerr=g_r_error, yerr=error_r, fmt="", marker="", ls="", ecolor=cm(norm(z)))
+
+    sc = plt.scatter(g_r, mag_r, c=z, cmap=cm, linewidth=1, zorder=100)
+    #plt.errorbar(g_r, mag_r, xerr=g_r_error, yerr=error_r, zorder=0)#, fmt=None, marker=None, zorder=0)
     plt.colorbar(sc, label='Time [days]')
-    prepare_plot("ZTF g-r variation with ZTF r", "g-r [mag]", "r [mag]", True, False, invert_yaxis=True)
+
+
+
+    #origin = np.array([np.min(g_r), np.max(mag_r)])
+    #plt.arrow(np.min(g_r), np.min(mag_r), a_ztf_g - a_ztf_r, a_ztf_r, width=0.001, color="k",
+    #          head_width=0.1, head_length=0.15, overhang=1)
+
+    prop = dict(arrowstyle="->,head_width=0.3,head_length=0.5", shrinkA=0, shrinkB=0)
+
+    x_offset = 0.5 * (np.max(g_r) - np.min(g_r))
+
+    plt.annotate("", xy=(np.min(g_r) + x_offset + (a_ztf_g - a_ztf_r), np.min(mag_r) + a_ztf_r),
+                 xytext=(np.min(g_r) + x_offset, np.min(mag_r)), arrowprops=prop)  # extinction arrow
+
+    prepare_plot(None, "g-r [mag]", "r [mag]", True, False, invert_yaxis=True, show_legend=False)
+
+
+def draw_g_r_raw_light_curve(light_curve_g: LightCurveZTF, light_curve_r: LightCurveZTF):
+    draw_points_err_bar(light_curve_g.data_t, light_curve_g.data_y, light_curve_g.data_error, label="ZTF g band", color='green', alpha=0.6, linewidth=2, fmt=".")
+    draw_points_err_bar(light_curve_r.data_t, light_curve_r.data_y, light_curve_r.data_error, label="ZTF r band", color='red', alpha=0.6, linewidth=2, fmt=".")
+    prepare_plot(None, "Time [days]", "Band [mag]", True, False)
 
 
 def g_r_variation(light_curve_g: LightCurveZTF, light_curve_r: LightCurveZTF):
-    binned_time_g, binned_mag_g = bin_nights(light_curve_g.data_t, light_curve_g.data_y)
-    binned_time_r, binned_mag_r = bin_nights(light_curve_r.data_t, light_curve_r.data_y)
+    binned_time_g, binned_mag_g, binned_error_g = bin_nights(light_curve_g.data_t, light_curve_g.data_y, light_curve_g.data_error)
+    binned_time_r, binned_mag_r, binned_error_r = bin_nights(light_curve_r.data_t, light_curve_r.data_y, light_curve_r.data_error)
 
     min_time_to_use = max(np.min(binned_time_g), np.min(binned_time_r))
     max_time_to_use = min(np.max(binned_time_g), np.max(binned_time_r))
@@ -1888,24 +1926,32 @@ def g_r_variation(light_curve_g: LightCurveZTF, light_curve_r: LightCurveZTF):
     args_to_use_r = np.logical_and.reduce((binned_time_r <= max_time_to_use, min_time_to_use <= binned_time_r))
 
     binned_mag_g = binned_mag_g[args_to_use_g]
+    binned_error_g = binned_error_g[args_to_use_g]
     binned_mag_r = binned_mag_r[args_to_use_r]
+    binned_error_r = binned_error_r[args_to_use_r]
     binned_time_g = binned_time_g[args_to_use_g]
 
     g_r = binned_mag_g - binned_mag_r
+    g_r_error = binned_error_g + binned_error_r
 
     g_r_args_to_use = ~np.isnan(g_r)
 
     binned_time_g = binned_time_g[g_r_args_to_use]
     g_r = g_r[g_r_args_to_use]
     binned_mag_r = binned_mag_r[g_r_args_to_use]
+    g_r_error = g_r_error[g_r_args_to_use]
+    binned_error_r = binned_error_r[g_r_args_to_use]
 
-    return binned_time_g, g_r, binned_mag_r
+    return binned_time_g, binned_mag_r, binned_error_r, g_r, g_r_error
 
-def bin_nights(time, mag):
+
+def bin_nights(time, mag, error):
     time_int = time.astype(int)
     bins_amount = np.max(time_int) - np.min(time_int) + 1
 
     median_values, bin_edges, bin_numbers = binned_statistic(time_int, mag, statistic='median', bins=bins_amount,
+                                                             range=(np.min(time_int), np.max(time_int) + 1))
+    mean_error_values, _, __ = binned_statistic(time_int, error, statistic='mean', bins=bins_amount,
                                                              range=(np.min(time_int), np.max(time_int) + 1))
 
     if False:
@@ -1914,5 +1960,10 @@ def bin_nights(time, mag):
     else:
         time_binned = bin_edges[:-1]
         mag_binned = median_values
+        error_binned = mean_error_values
 
-    return time_binned, mag_binned
+    return time_binned, mag_binned, error_binned
+
+
+def test():
+    lam = np.array().astype(float)

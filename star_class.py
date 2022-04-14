@@ -1,5 +1,4 @@
 import os.path
-
 import numpy as np
 import config_file as cf
 import lightcurve_class
@@ -434,7 +433,7 @@ class Star:
             self.ztf_r_light_curve.remove_long_term_trend()
             self.ztf_i_light_curve.remove_long_term_trend()
 
-        lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 25, 35)  # 9.353221424477987
+        #lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 25, 35)  # 9.353221424477987
 
         """lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 150, 500)
         #lightcurve_class.slider_folded_light_curve_freq(self.ztf_g_light_curve, 0.05, 1)
@@ -457,12 +456,17 @@ class Star:
         self.ztf_g_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
         self.ztf_i_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
 
-        self.ztf_r_light_curve.draw_spectral_window()
+        # self.gaia_g_light_curve.show_image = show_pictures
+        # self.gaia_g_light_curve.draw_raw_light_curve()
+        # self.ztf_g_light_curve.draw_folded_light_curve(draw_fit_function=False)
+
+        #self.ztf_r_light_curve.draw_spectral_window()
 
         #self.gaia_g_light_curve.draw_folded_with_colored_time()
         #self.ztf_g_light_curve.draw_folded_with_colored_time()
         #self.ztf_r_light_curve.draw_folded_with_colored_time()
 
+        lightcurve_class.draw_g_r_raw_light_curve(self.ztf_g_light_curve, self.ztf_r_light_curve)
         lightcurve_class.plot_g_r_variation(self.ztf_g_light_curve, self.ztf_r_light_curve)
 
         #self.ztf_r_light_curve.fitting_example_frequency_periodogram()
@@ -815,4 +819,5 @@ class Star:
 
     def get_closest_nebula(self, nebula_data):
         get_closest_nebula.find_nebula(self, nebula_data, cf.output_textfile_nebulae)
+        #get_closest_nebula.find_nebula_visual(self, nebula_data_visual, cf.textfiles_output_folder + "temp_neb_visual.txt")
 

@@ -5,7 +5,6 @@ import get_gaia_lpv_table
 import tools
 import config_file as cf
 import matplotlib
-import datetime
 from xmatched_tables_class import XMatchTables
 import os
 import pandas as pd
@@ -17,8 +16,6 @@ if not cf.debug_mode:   # If doing lots of images, without this function need in
     matplotlib.use('Agg')
 
 # TODO:
-# - Extend analysis to LAVs
-# - Convert to f-strings
 # - Double check default function parameter: is made at initialisation of script, not each function's call
 # - Check == for True/False/None
 # - Convert loops to "for i,v in in enumerate(a):" instead of range
@@ -77,6 +74,8 @@ def main():
                 nebulae_data = nebula_data
             else:
                 nebulae_data = np.append(nebulae_data, nebula_data, axis=0)
+
+        #nebula_data_visual = tools.load_data("mol_clouds/og_or_old/mol_clouds_full_visual_sizes.txt")
 
     if cf.do_vvvdr4_astroquery:
         for catalogue in ["VVVDR4"]:
@@ -240,7 +239,7 @@ def main():
             # star_object.print_amount_of_ir_points()
 
             if cf.find_nebula:
-                star_object.get_closest_nebula(nebulae_data)
+                star_object.get_closest_nebula(nebulae_data, nebula_data_visual)
 
         output_time_to_print, time_before, recent_time_length = tools.time_counter(i, time_before, np.size(ids),
                                                                                    recent_time_length)

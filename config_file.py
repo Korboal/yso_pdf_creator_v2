@@ -5,7 +5,7 @@ import numpy as np
 file_category = "all"               # Purely for naming purposes of the outputs. Useful if need different samples
 gaia_table_version = 45             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
 save_pdfs = False                   # If want to save images as PDFs, increases the run time quite a bit
-debug_mode = False                   # Debug mode: show parameters and images, do NOT save anything
+debug_mode = True                   # Debug mode: show parameters and images, do NOT save anything
 save_images_if_not_debug = False    # If want to save images, while not debugging
 use_vizier_data = False             # If want to also plot data from Vizier
 
@@ -15,12 +15,12 @@ do_multiband_periodogram = False
 
 neowise_lightcurve_fit = False
 
-sed_line_fit = False        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
+sed_line_fit = True        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
 do_pdf_creation = False     # Make PDFs for each star with their information and fits
 do_bb_fit = False           # Do fits using my own blackbody fits (bad)
 save_bb_variables = False   # Save variables for blackbody fit
 do_sedfitter = False        # Use SEDFitter to fit star's models. Only on fast PC
-find_nebula = True
+find_nebula = False
 
 do_irsa_astroquery = False
 do_xmm_astroquery = False
@@ -28,7 +28,7 @@ do_vvvdr4_astroquery = False
 recalculate_sedfitter_param_ranges = False
 recalculate_folder = "sedfitter/fitinfo/spusmi/" #"sedfitter/fitinfo/spsi/"
 
-sed_fits_to_do = "1111111"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
+sed_fits_to_do = "0001001"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
 #sed_fits_to_do = "0000001"
 
 remove_ztf_peak_periodogram_days = []   # 1
