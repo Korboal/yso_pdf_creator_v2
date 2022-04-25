@@ -2,7 +2,7 @@ import numpy as np
 import tools
 import lightcurve_class
 from astropy.io.votable import parse_single_table
-import get_gaia_lpv_table
+import get_gaia_table
 import config_file as cf
 from sine_curve_test import simulate_sine_curve_1
 from sine_curve_2 import simulate_sine_curve_normal

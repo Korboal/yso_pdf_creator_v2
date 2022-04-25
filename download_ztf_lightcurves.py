@@ -1,7 +1,7 @@
 import wget
 import numpy as np
 import tools
-import get_gaia_lpv_table
+import get_gaia_table
 import config_file as cf
 import os
 

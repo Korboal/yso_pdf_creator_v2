@@ -5,7 +5,7 @@ from lmfit import Model, Parameters, Parameter, minimize
 from astropy.io.votable import parse_single_table
 import tools
 from tools import conv_wavelength_to_freq, compare_two_floats
-from get_gaia_lpv_table import find_index_with_id
+from get_gaia_table import find_index_with_id
 import config_file as cf
 import scipy
 from scipy import interpolate

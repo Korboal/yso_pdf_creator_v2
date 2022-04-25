@@ -1,7 +1,7 @@
 #import get_astroquery
 from star_class import Star
 import numpy as np
-import get_gaia_lpv_table
+import get_gaia_table
 import tools
 import config_file as cf
 import matplotlib
@@ -32,7 +32,7 @@ def main():
     appropriate functions.
     """
 
-    gaia_lpv_table = get_gaia_lpv_table.get_data_from_table(cf.input_gaia_table_path)     # Get main Gaia info (GDR2 + GEDR3)
+    gaia_lpv_table = get_gaia_table.get_data_from_table(cf.input_gaia_table_path)     # Get main Gaia info (GDR2 + GEDR3)
     ids = tools.get_specific_column_from_data_str(gaia_lpv_table, "source_id").astype(str)
     if np.size(cf.ids_to_calculate) != 0:  # If want to only run program for specific IDs, then it takes those IDs here
         ids = tools.get_ids_to_analyse(ids, cf.ids_to_calculate)
@@ -98,7 +98,7 @@ def main():
             for i in range(np.size(ids)):
                 star_object = Star(ids[i], x_match_obj)
                 star_object.__setstate__(
-                    get_gaia_lpv_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
+                    get_gaia_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
 
                 try:
                     get_astroquery.add_vvv_missing_entry(all_source_ids, output_path, output_empty_path,
@@ -134,7 +134,7 @@ def main():
             for i in range(np.size(ids)):
                 star_object = Star(ids[i], x_match_obj)
                 star_object.__setstate__(
-                    get_gaia_lpv_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
+                    get_gaia_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
 
                 try:
                     get_astroquery.add_irsa_missing_entry(all_source_ids, output_path, output_empty_path, star_object.source_id, star_object.ra,
@@ -174,7 +174,7 @@ def main():
 
             for i in range(np.size(ids)):
                 star_object = Star(ids[i], x_match_obj)
-                star_object.__setstate__(get_gaia_lpv_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
+                star_object.__setstate__(get_gaia_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
 
                 try:
                     get_astroquery.add_xmm_missing_entry(all_source_ids, output_path, output_empty_path, star_object.source_id, star_object.ra, star_object.dec, xmm_catalogue, cf.xmm_catalogues_xmatch_radius[j])
@@ -193,7 +193,7 @@ def main():
 
     for i in range(np.size(ids)):   # Go through each ID, at the end deleting each one to save memory
         star_object = Star(ids[i], x_match_obj)
-        star_object.__setstate__(get_gaia_lpv_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
+        star_object.__setstate__(get_gaia_table.get_star_info(gaia_lpv_table, ids[i]))  # Setting Gaia data here
 
         if not tools.isfile(star_object.pdf_dir) or True:
             #if ids[i] in ids_to_do and not tools.isfile(star_object.pdf_dir):

@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from star_class import Star
 from config_file import temp_path
+from typing import Union
 
 
-def format_decim(value: float, decimal_amount: int): #  -> Union[str, float]
+def format_decim(value: float, decimal_amount: int) -> Union[str, float]:
     """
     Rounds the float value up to specific decimal amount and returns string value of it
 
@@ -33,9 +34,8 @@ def write_gaia_info_for_one_star(canvas_to_use: canvas.Canvas, star_obj: Star):
     [cleaned_alt_type.append(j) for j in temp_alt_type if j not in cleaned_alt_type]
     cleaned_alt_type = ('|'.join(cleaned_alt_type).replace("|*|", "|")).replace("|", "_")
 
-    dist_temp = star_obj.distance_ge3
     dist_error_temp = star_obj.parallax_error_ge3 / star_obj.parallax_ge3 * 100
-    dist_txt = str(format_decim(dist_temp, 0)) + "pc " + str(int(format_decim(dist_error_temp, 0))) + "%"
+    dist_txt = f"{format_decim(star_obj.distance_ge3, 0)} pc ± {int(format_decim(dist_error_temp, 0))} %"
 
     if star_obj.gaia_g_light_curve is None:
         star_obj.lightcurve_fit_and_plot(False, False, False, False)
@@ -46,22 +46,23 @@ def write_gaia_info_for_one_star(canvas_to_use: canvas.Canvas, star_obj: Star):
     if star_obj.ztf_g_light_curve is None or star_obj.ztf_r_light_curve is None:
         star_obj.analyse_ztf_lightcurves(False, False, False, False, False)
 
-    strings_to_write = np.array(["GDR2: " + star_obj.source_id, "SIMBAD: " + star_obj.name_simbad,
-                                 "Types: " + star_obj.main_type_simbad, cleaned_alt_type,
-                                 "Per G2: " + str(format_decim(star_obj.period_g2, 2)) +
-                                 " ± " + str(format_decim(star_obj.period_err_g2, 2)) + " d",
-                                 "My per: " + str(format_decim(star_obj.gaia_g_light_curve.period_fit, 2)) + " days",
-                                 "Dist GE3: " + dist_txt,
-                                 "Extinction G2: " + str(format_decim(star_obj.extinction_g2, 4)) + " mag",
-                                 "G mag G2: " + str(format_decim(star_obj.g_mag_g2, 4)) + " mag",
-                                 "G mag GE3: " + str(format_decim(star_obj.g_mag_ge3, 4)) + " mag",
-                                 "RV Teff templ G2: " + str(format_decim(star_obj.teff_template_g2, 0)) + " K",
-                                 "Teff G2: " + str(format_decim(star_obj.teff_val_g2, 0)) + " K",
-                                 "Slope 20: " + str(format_decim(star_obj.ir_slope20, 2)),
-                                 "Slope 25: " + str(format_decim(star_obj.ir_slope25, 2)),
-                                 "ZTF g per: " + str(format_decim(star_obj.ztf_g_light_curve.period_fit, 2)) + " d",
-                                 "ZTF r per: " + str(format_decim(star_obj.ztf_r_light_curve.period_fit, 2)) + " d"])
+    strings_to_write = np.array([f"GEDR3: {star_obj.source_id}",
+                                 f"SIMBAD: {star_obj.name_simbad}",
+                                 f"Types: {star_obj.main_type_simbad}", cleaned_alt_type,
+                                 f"Dist GE3: {dist_txt}",
+                                 f"Extinction G2: {format_decim(star_obj.extinction_g2, 4)} mag",
+                                 f"G mag G2: {format_decim(star_obj.g_mag_g2, 4)} mag",
+                                 f"G mag GE3: {format_decim(star_obj.g_mag_ge3, 4)} mag",
+                                 f"Slope 20: {format_decim(star_obj.ir_slope20, 2)}",
+                                 f"Slope 25: {format_decim(star_obj.ir_slope25, 2)}",
+                                 f"Per G2: {format_decim(star_obj.period_g2, 2)} ± {format_decim(star_obj.period_err_g2, 2)} d"])
     """,
+                                 "My per: " + str(format_decim(star_obj.gaia_g_light_curve.period_fit, 2)) + " days",
+                                 "ZTF g per: " + str(format_decim(star_obj.ztf_g_light_curve.period_fit, 2)) + " d",
+                                 "ZTF r per: " + str(format_decim(star_obj.ztf_r_light_curve.period_fit, 2)) + " d"])"""
+    """,
+    "RV Teff templ G2: " + str(format_decim(star_obj.teff_template_g2, 0)) + " K",
+                                 "Teff G2: " + str(format_decim(star_obj.teff_val_g2, 0)) + " K",
                                  "NRMSE G G: " + str(format_decim(star_obj.gaia_g_light_curve.nrmse_fit, 2)),
                                  "NRMSE G BP with G G: " + str(format_decim(star_obj.gaia_bp_light_curve.nrmse_using_gaia_g, 2)),
                                  "NRMSE G RP with G G: " + str(format_decim(star_obj.gaia_rp_light_curve.nrmse_using_gaia_g, 2)),
@@ -163,8 +164,8 @@ def draw_pdf_graphs(canvas_to_use: canvas.Canvas, star_obj: Star, data_all_gaia_
                           left_images_directory_page_2, right_images_directory_page_2)
     canvas_to_use.showPage()
 
-    left_images_directory_page_3 = [star_obj.ztf_output_pictures_fit_ztf_g, star_obj.ztf_output_pictures_fit_ztf_r, star_obj.sed_bar_dir_png, "none"]
-    right_images_directory_page_3 = [star_obj.ztf_output_pictures_folded_ztf_g, star_obj.ztf_output_pictures_folded_ztf_r, "none", star_obj.output_gaia_all_bands_raw_data_png]
+    left_images_directory_page_3 = [star_obj.ztf_output_pictures_fit_ztf_g, star_obj.ztf_output_pictures_fit_ztf_r, star_obj.sed_bar_dir_png, None]
+    right_images_directory_page_3 = [star_obj.ztf_output_pictures_folded_ztf_g, star_obj.ztf_output_pictures_folded_ztf_r, None, star_obj.output_gaia_all_bands_raw_data_png]
     draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
                           left_images_directory_page_3, right_images_directory_page_3)
     canvas_to_use.showPage()
@@ -172,15 +173,15 @@ def draw_pdf_graphs(canvas_to_use: canvas.Canvas, star_obj: Star, data_all_gaia_
     left_images_directory_page_4 = [star_obj.ztf_output_pictures_periodogram_ztf_g_png, star_obj.ztf_output_pictures_folded_g_with_ztf_r_fit,
                                     star_obj.output_frequency_periodogram_gaia_g_png, star_obj.output_frequency_periodogram_ztf_r_png]
     right_images_directory_page_4 = [star_obj.ztf_output_pictures_periodogram_ztf_r_png, star_obj.ztf_output_pictures_folded_r_with_ztf_g_fit,
-                                     star_obj.output_frequency_periodogram_ztf_g_png, "none"]
+                                     star_obj.output_frequency_periodogram_ztf_g_png, None]
     draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
                           left_images_directory_page_4, right_images_directory_page_4)
-    canvas_to_use.showPage()
+    """canvas_to_use.showPage()
 
     left_images_directory_page_5 = [star_obj.output_multiband_frequency_periodogram_gaia_png, star_obj.output_multiband_gaia_fit_gaia_bp_png,
                                     star_obj.output_multiband_frequency_periodogram_ztf_png, star_obj.output_multiband_ztf_fit_ztf_r_png]
     right_images_directory_page_5 = [star_obj.output_multiband_gaia_fit_gaia_g_png, star_obj.output_multiband_gaia_fit_gaia_rp_png,
-                                     star_obj.output_multiband_ztf_fit_ztf_g_png, "none"]
+                                     star_obj.output_multiband_ztf_fit_ztf_g_png, None]
     draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
                           left_images_directory_page_5, right_images_directory_page_5)
     canvas_to_use.showPage()
@@ -191,19 +192,34 @@ def draw_pdf_graphs(canvas_to_use: canvas.Canvas, star_obj: Star, data_all_gaia_
                                      star_obj.output_multiband_all_fit_ztf_r_png]
     draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
                           left_images_directory_page_6, right_images_directory_page_6)
-    #canvas_to_use.showPage()
+    canvas_to_use.showPage()"""
 
 
 def draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image,
                           left_images_directory, right_images_directory):
     for i in range(len(left_images_directory)):
-        if left_images_directory[i] != "none":
-            canvas_to_use.drawImage(left_images_directory[i], init_x_image, init_y_image, width=image_width,
-                                    preserveAspectRatio=True)
-        if right_images_directory[i] != "none":
-            canvas_to_use.drawImage(right_images_directory[i], init_x_image + image_width + image_spacing,
-                                    init_y_image, width=image_width, preserveAspectRatio=True)
+        draw_canvas_image(canvas_to_use, left_images_directory[i], init_x_image, init_y_image, image_width)
+        draw_canvas_image(canvas_to_use, right_images_directory[i], init_x_image + image_width + image_spacing,
+                          init_y_image, image_width)
         init_y_image = init_y_image - image_height - image_spacing
+
+
+def draw_canvas_image(canvas_to_use: canvas.Canvas, image_directory: str, x_image: float, y_image: float,
+                      image_width: float):
+    """
+    Draws image in the canvas, if image directory is given and the image exists. Otherwise prints that no image is given
+
+    :param canvas_to_use: canvas where to draw
+    :param image_directory: path to the image
+    :param x_image: x coordinate of image top left corner
+    :param y_image: y coordinate of image top left corner
+    :param image_width: width of image in pixels
+    """
+    if image_directory is not None:
+        try:
+            canvas_to_use.drawImage(image_directory, x_image, y_image, width=image_width, preserveAspectRatio=True)
+        except:
+            print(f"No image at {image_directory}")
 
 
 def create_new_canvas_for_a_star(star_obj: Star, data_all_gaia_stars):

@@ -3,7 +3,7 @@ import matplotlib
 import numpy as np
 
 file_category = "all"               # Purely for naming purposes of the outputs. Useful if need different samples
-gaia_table_version = 45             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
+gaia_table_version = 46             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
 save_pdfs = False                   # If want to save images as PDFs, increases the run time quite a bit
 debug_mode = True                   # Debug mode: show parameters and images, do NOT save anything
 save_images_if_not_debug = False    # If want to save images, while not debugging
@@ -131,8 +131,10 @@ input_light_curve_to_analyse_path = f"xml_files/{file_category}/"
 
 # Output for files
 
+date_time_to_use = str(datetime.datetime.now()).replace(':', '_')
+
 textfiles_output_folder = "output_textfiles/"
-output_text_any_param = f"{textfiles_output_folder}{str(datetime.datetime.now()).replace(':', '_')}_"
+output_text_any_param = f"{textfiles_output_folder}{date_time_to_use}_"
 output_pdf_files = f"output_pdf/{file_category}/"
 
 # Output files for light curves:
@@ -149,7 +151,7 @@ lightcurve_gaia_txt_to_save = "#source_id_1\tperiod_gaia_g\tmax_amp_gaia_g\tq95_
                               "\tgaia_g_median_ls_powers_old_normal\tgaia_g_median_ls_powers_new_normal" \
                               "\tgaia_g_ls_peak_old_normal\tgaia_g_ls_peak_new_normal"
 
-output_fitted_param = f"{textfiles_output_folder}{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_fitted_param.txt"
+output_fitted_param = f"{textfiles_output_folder}{date_time_to_use}_{file_category}_fitted_param.txt"
 
 output_periodogram_gaia_g_png = f"output_pictures/{file_category}/periodogram_gaia_g_png/"
 output_periodogram_gaia_g_pdf = f"output_pictures/{file_category}/periodogram_gaia_g_pdf/"
@@ -174,7 +176,7 @@ output_bp_raw_data_pdf = f"output_pictures/{file_category}/rawdata_BP_pdf/"
 
 output_gaia_all_bands_raw_data_png = f"output_pictures/{file_category}/all_gaia_rawdata_png/"
 
-output_fitted_period_text = f"{textfiles_output_folder}{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_periods.txt"
+output_fitted_period_text = f"{textfiles_output_folder}{date_time_to_use}_{file_category}_periods.txt"
 
 # ZTF light curves
 
@@ -221,7 +223,7 @@ input_ztf_lightcurves_to_analyse = f"input_lightcurves/{file_category}/ztf/"
 
 neowise_light_curve_file_path = f"input_lightcurves/{file_category}/neowise_xmatch.vot"
 
-output_ztf_lightcurves_period = f"{textfiles_output_folder}{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_periods_ztf.txt"
+output_ztf_lightcurves_period = f"{textfiles_output_folder}{date_time_to_use}_{file_category}_periods_ztf.txt"
 output_ztf_lightcurves_pictures = f"output_pictures/{file_category}/ztf_lightcurves/"
 
 output_ztf_fit = f"output_pictures/{file_category}/ztf_lightcurves_fit/"
@@ -257,7 +259,7 @@ output_sed_ir_slope_fit_pdf = f"output_pictures/{file_category}/sed_ir_slope_pdf
 output_sed_integrated_excess_figure_png = f"output_pictures/{file_category}/sed_int_excess_png/"
 output_sed_integrated_excess_figure_pdf = f"output_pictures/{file_category}/sed_int_excess_pdf/"
 
-output_sed_temp_fits_txt = f"{textfiles_output_folder}{str(datetime.datetime.now()).replace(':', '_')}__sed_temp.txt"
+output_sed_temp_fits_txt = f"{textfiles_output_folder}{date_time_to_use}__sed_temp.txt"
 
 output_sed_temp_pic = f"output_pictures/{file_category}/sed_temps/"
 
@@ -279,8 +281,8 @@ bb_fit_txt_to_save = "#source_id_12\tstar_temp\tdisk_temp\tscale_factor_disk\tra
 sedfitter_pc_separation = 1    # Separation of stars to do fits on
 sedfitter_upper_limit_confident = 0.3   # Expected 0 to 1. 1 is full confidence, 0 is treating upper limit as if not existant
 
-sedfitter_file_data = f"output_textfiles/sed/{file_category}{str(datetime.datetime.now()).replace(':', '_')}_for_sedfitter"
-sedfitter_output_parameters = f"sedfitter/parameters/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_"
+sedfitter_file_data = f"output_textfiles/sed/{file_category}{date_time_to_use}_for_sedfitter"
+sedfitter_output_parameters = f"sedfitter/parameters/{date_time_to_use}_{file_category}_"
 sedfitter_output_parameters_folder = 'sedfitter/parameters/'
 sedfitter_filters_total = ["GDR2_BP", "GEDR3_BP", "GEDR3_G", "GDR2_G", "GEDR3_RP", "GDR2_RP", "2J", "2H", "2K", "WISE1",
                            "I1", "I2", "WISE2", "I3", "I4", "WISE3", "WISE4", "M1", "PACS1", "M2", "PACS2"]
@@ -310,9 +312,9 @@ temp_path = "temp/"
 # Nebulae data
 
 input_folder_nebulae = "mol_clouds/"
-output_textfile_nebulae = f"output_textfiles/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_nebulae_data.txt"
-output_textfile_nebulae_star_pm = f"output_textfiles/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_nebulae_with_star_pm.txt"
-output_textfile_nebulae_only_pm = f"output_textfiles/{str(datetime.datetime.now()).replace(':', '_')}_{file_category}_nebulae_only_pm.txt"
+output_textfile_nebulae = f"output_textfiles/{date_time_to_use}_{file_category}_nebulae_data.txt"
+output_textfile_nebulae_star_pm = f"output_textfiles/{date_time_to_use}_{file_category}_nebulae_with_star_pm.txt"
+output_textfile_nebulae_only_pm = f"output_textfiles/{date_time_to_use}_{file_category}_nebulae_only_pm.txt"
 input_pm_nebulae = "mol_clouds/pm_nebula/mol_clouds_gaianew_v2.txt"
 
 # Wavelength in meters
@@ -625,6 +627,224 @@ extra_catalogues_dir = {
     "twomass_2_arc_flux_unit": False,
 
     "gaia_dr2_edr3": "../../Unige/2021-2022_Master_project/Data/x_matches/gaia_dr2_edr3.fits",
+    "gaia_dr2_edr3_flux": ["phot_g_mean_mag_g2", "phot_bp_mean_mag_g2", "phot_rp_mean_mag_g2",
+                           "phot_g_mean_mag_ge3", "phot_bp_mean_mag_ge3", "phot_rp_mean_mag_ge3"],
+    "gaia_dr2_edr3_err": ["g_mean_mag_err_g2", "bp_mean_mag_err_g2", "rp_mean_mag_err_g2",
+                          "g_mean_mag_err_ge3", "bp_mean_mag_err_ge3", "rp_mean_mag_err_ge3"],
+    "gaia_dr2_edr3_flag": [],
+    "gaia_dr2_edr3_wave": [g_dr2, bp_dr2, rp_dr2,
+                           g_edr3, bp_edr3, rp_edr3],
+    "gaia_dr2_edr3_pref": 1,
+    "gaia_dr2_edr3_flux_unit": False
+    }
+
+extra_catalogues_dir_lav = {
+    "table_names": ["WISE_2_arc", "ALLWISE_2_arc", "SEIP_2_arc", "C2D_reliable_stars_2_arc", "C2D_cloud_2_arc",
+                    "CSI_2264_2_arc",
+                    "Cygnus_X_cat_2_arc", "GLIMPSE_I_2_arc", "GLIMPSE_II_2_arc", "GLIMPSE_II_Epoch_1_2_arc",
+                    "GLIMPSE_II_Epoch_2_2_arc", "GLIMPSE_3D_2_arc", "GLIMPSE_3D_Epoch_1_2_arc",
+                    "GLIMPSE_3D_Epoch_2_2_arc", "GLIMPSE_Vela_2_arc", "GLIMPSE_SMOG_2_arc",
+                    "GLIMPSE_Cygnus_2_arc", "MIPSGAL_2_arc", "Taurus_2_arc", "YSO_GGD_2_arc",
+                    "YSO_L1688_2_arc", "PACS_70_5_6_arc", "PACS_100_6_8_arc",
+                    "twomass_2_arc", "gaia_dr2_edr3"],
+
+    "WISE_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/WISE_2_arc_.fits",
+    "WISE_2_arc_flux": ["w1mpro", "w2mpro", "w3mpro", "w4mpro"],
+    "WISE_2_arc_err": ["w1sigmpro", "w2sigmpro", "w3sigmpro", "w4sigmpro"],
+    "WISE_2_arc_flag": ["ph_qual"],
+    "WISE_2_arc_wave": [W1, W2, W3, W4],
+    "WISE_2_arc_pref": 1,
+    "WISE_2_arc_flux_unit": False,
+
+    "ALLWISE_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/ALLWISE_2_arc_.fits",
+    "ALLWISE_2_arc_flux": ["w1mpro", "w2mpro", "w3mpro", "w4mpro"],
+    "ALLWISE_2_arc_err": ["w1sigmpro", "w2sigmpro", "w3sigmpro", "w4sigmpro"],
+    "ALLWISE_2_arc_flag": ["ph_qual"],
+    "ALLWISE_2_arc_wave": [W1, W2, W3, W4],
+    "ALLWISE_2_arc_pref": 1,
+    "ALLWISE_2_arc_flux_unit": False,
+
+    "SEIP_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/SEIP_2_arc.fits",
+    "SEIP_2_arc_flux": ["i1_f_ap1", "i2_f_ap1", "i3_f_ap1", "i4_f_ap1", "m1_f_ap"],
+    "SEIP_2_arc_err": ["i1_df_ap1", "i2_df_ap1", "i3_df_ap1", "i4_df_ap1", "m1_df_ap"],
+    "SEIP_2_arc_flag": ["i1_fluxtype", "i2_fluxtype", "i3_fluxtype", "i4_fluxtype", "m1_fluxtype"],
+    "SEIP_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
+    "SEIP_2_arc_pref": pow(10, -6),
+    "SEIP_2_arc_flux_unit": True,
+
+    "C2D_reliable_stars_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/C2D_reliable_stars_2_arc.fits",
+    "C2D_reliable_stars_2_arc_flux": ["ir1_flux_c", "ir2_flux_c", "ir3_flux_c", "ir4_flux_c", "mp1_flux_c",
+                                      "mp2_flux_c"],
+    "C2D_reliable_stars_2_arc_err": ["ir1_d_flux_c", "ir2_d_flux_c", "ir3_d_flux_c", "ir4_d_flux_c", "mp1_d_flux_c",
+                                     "mp2_d_flux_c"],
+    "C2D_reliable_stars_2_arc_flag": ["ir1_q_det_c", "ir2_q_det_c", "ir3_q_det_c", "ir4_q_det_c", "mp1_q_det_c",
+                                      "mp2_q_det_c"],
+    "C2D_reliable_stars_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
+    "C2D_reliable_stars_2_arc_pref": pow(10, -3),
+    "C2D_reliable_stars_2_arc_flux_unit": True,
+
+    "C2D_cloud_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/C2D_cloud_2_arc.fits",
+    "C2D_cloud_2_arc_flux": ["ir1_flux_c", "ir2_flux_c", "ir3_flux_c", "ir4_flux_c", "mp1_flux_c", "mp2_flux_c"],
+    "C2D_cloud_2_arc_err": ["ir1_d_flux_c", "ir2_d_flux_c", "ir3_d_flux_c", "ir4_d_flux_c", "mp1_d_flux_c",
+                            "mp2_d_flux_c"],
+    "C2D_cloud_2_arc_flag": ["ir1_q_det_c", "ir2_q_det_c", "ir3_q_det_c", "ir4_q_det_c", "mp1_q_det_c", "mp2_q_det_c"],
+    "C2D_cloud_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
+    "C2D_cloud_2_arc_pref": pow(10, -3),
+    "C2D_cloud_2_arc_flux_unit": True,
+
+    "CSI_2264_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/CSI_2264_2_arc.fits",
+    "CSI_2264_2_arc_flux": ["mag_36", "mag_45", "mag_58", "mag_80", "mag_24"],
+    "CSI_2264_2_arc_err": ["err_36", "err_45", "err_58", "err_80", "err_24"],
+    "CSI_2264_2_arc_flag": [],
+    "CSI_2264_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
+    "CSI_2264_2_arc_pref": 1,
+    "CSI_2264_2_arc_flux_unit": False,
+
+    "Cygnus_X_cat_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/Cygnus_X_cat_2_arc.fits",
+    "Cygnus_X_cat_2_arc_flux": ["i1flux", "i2flux", "i3flux", "i4flux", "m24flux"],
+    "Cygnus_X_cat_2_arc_err": ["i1ferr", "i2ferr", "i3ferr", "i4ferr", "m24ferr"],
+    "Cygnus_X_cat_2_arc_flag": [],
+    "Cygnus_X_cat_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
+    "Cygnus_X_cat_2_arc_pref": pow(10, -6),
+    "Cygnus_X_cat_2_arc_flux_unit": True,
+
+    "GLIMPSE_I_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_I_2_arc.fits",
+    "GLIMPSE_I_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_I_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_I_2_arc_flag": [],
+    "GLIMPSE_I_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_I_2_arc_pref": pow(10, -3),
+    "GLIMPSE_I_2_arc_flux_unit": True,
+
+    "GLIMPSE_II_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_II_2_arc.fits",
+    "GLIMPSE_II_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_II_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_II_2_arc_flag": [],
+    "GLIMPSE_II_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_II_2_arc_pref": pow(10, -3),
+    "GLIMPSE_II_2_arc_flux_unit": True,
+
+    "GLIMPSE_II_Epoch_1_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_II_Epoch_1_2_arc.fits",
+    "GLIMPSE_II_Epoch_1_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_II_Epoch_1_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_II_Epoch_1_2_arc_flag": [],
+    "GLIMPSE_II_Epoch_1_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_II_Epoch_1_2_arc_pref": pow(10, -3),
+    "GLIMPSE_II_Epoch_1_2_arc_flux_unit": True,
+
+    "GLIMPSE_II_Epoch_2_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_II_Epoch_2_2_arc.fits",
+    "GLIMPSE_II_Epoch_2_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_II_Epoch_2_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_II_Epoch_2_2_arc_flag": [],
+    "GLIMPSE_II_Epoch_2_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_II_Epoch_2_2_arc_pref": pow(10, -3),
+    "GLIMPSE_II_Epoch_2_2_arc_flux_unit": True,
+
+    "GLIMPSE_3D_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_3D_2_arc.fits",
+    "GLIMPSE_3D_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_3D_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_3D_2_arc_flag": [],
+    "GLIMPSE_3D_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_3D_2_arc_pref": pow(10, -3),
+    "GLIMPSE_3D_2_arc_flux_unit": True,
+
+    "GLIMPSE_3D_Epoch_1_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_3D_Epoch_1_2_arc.fits",
+    "GLIMPSE_3D_Epoch_1_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_3D_Epoch_1_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_3D_Epoch_1_2_arc_flag": [],
+    "GLIMPSE_3D_Epoch_1_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_3D_Epoch_1_2_arc_pref": pow(10, -3),
+    "GLIMPSE_3D_Epoch_1_2_arc_flux_unit": True,
+
+    "GLIMPSE_3D_Epoch_2_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_3D_Epoch_2_2_arc.fits",
+    "GLIMPSE_3D_Epoch_2_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_3D_Epoch_2_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_3D_Epoch_2_2_arc_flag": [],
+    "GLIMPSE_3D_Epoch_2_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_3D_Epoch_2_2_arc_pref": pow(10, -3),
+    "GLIMPSE_3D_Epoch_2_2_arc_flux_unit": True,
+
+    "GLIMPSE_Vela_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_Vela_2_arc.fits",
+    "GLIMPSE_Vela_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_Vela_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_Vela_2_arc_flag": [],
+    "GLIMPSE_Vela_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_Vela_2_arc_pref": pow(10, -3),
+    "GLIMPSE_Vela_2_arc_flux_unit": True,
+
+    "GLIMPSE_SMOG_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_SMOG_2_arc.fits",
+    "GLIMPSE_SMOG_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_SMOG_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_SMOG_2_arc_flag": [],
+    "GLIMPSE_SMOG_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_SMOG_2_arc_pref": pow(10, -3),
+    "GLIMPSE_SMOG_2_arc_flux_unit": True,
+
+    "GLIMPSE_Cygnus_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_Cygnus_2_arc.fits",
+    "GLIMPSE_Cygnus_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
+    "GLIMPSE_Cygnus_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
+    "GLIMPSE_Cygnus_2_arc_flag": [],
+    "GLIMPSE_Cygnus_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_Cygnus_2_arc_pref": pow(10, -3),
+    "GLIMPSE_Cygnus_2_arc_flux_unit": True,
+
+    "MIPSGAL_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/MIPSGAL_2_arc.fits",
+    "MIPSGAL_2_arc_flux": ["fnu_3_6", "fnu_4_5", "fnu_5_8", "fnu_8_0", "fnu_24"],
+    "MIPSGAL_2_arc_err": ["sigma_fnu_3_6", "sigma_fnu_4_5", "sigma_fnu_5_8", "sigma_fnu_8_0", "sigma_fnu_24"],
+    "MIPSGAL_2_arc_flag": [],
+    "MIPSGAL_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
+    "MIPSGAL_2_arc_pref": pow(10, -3),
+    "MIPSGAL_2_arc_flux_unit": True,
+
+    "Taurus_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/Taurus_2_arc.fits",
+    "Taurus_2_arc_flux": ["i1_02px_flx", "i2_02px_flx", "i3_02px_flx", "i4_02px_flx", "m1flux", "m2flux"],
+    "Taurus_2_arc_err": ["i1_02px_err", "i2_02px_err", "i3_02px_err", "i4_02px_err", "m1fluxerr", "m2fluxerr"],
+    "Taurus_2_arc_flag": [],
+    "Taurus_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
+    "Taurus_2_arc_pref": pow(10, -6),
+    "Taurus_2_arc_flux_unit": True,
+
+    "YSO_GGD_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/YSO_GGD_2_arc.fits",
+    "YSO_GGD_2_arc_flux": ["c3_6mag", "c4_5mag", "c5_8mag", "c8_0mag", "c24mag"],
+    "YSO_GGD_2_arc_err": ["c3_6err", "c4_5err", "c5_8err", "c8_0err", "c24err"],
+    "YSO_GGD_2_arc_flag": ["c3_6lim", "c4_5lim", "c5_8lim", "c8_0lim", "c24lim"],
+    "YSO_GGD_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
+    "YSO_GGD_2_arc_pref": 1,
+    "YSO_GGD_2_arc_flux_unit": False,
+
+    "YSO_L1688_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/YSO_L1688_2_arc.fits",
+    "YSO_L1688_2_arc_flux": ["c3_6mag", "c4_5mag", "c5_8mag", "c8_0mag", "c24mag", "c70mag"],
+    "YSO_L1688_2_arc_err": ["c3_6err", "c4_5err", "c5_8err", "c8_0err", "c24err", "c70err"],
+    "YSO_L1688_2_arc_flag": ["c3_6lim", "c4_5lim", "c5_8lim", "c8_0lim", "c24lim", "c70lim"],
+    "YSO_L1688_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
+    "YSO_L1688_2_arc_pref": 1,
+    "YSO_L1688_2_arc_flux_unit": False,
+
+    "PACS_70_5_6_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/PACS_70_5_6_arc.fits",
+    "PACS_70_5_6_arc_flux": ["flux"],
+    "PACS_70_5_6_arc_err": ["snrnoise"],
+    "PACS_70_5_6_arc_flag": [],
+    "PACS_70_5_6_arc_wave": [pacs70],
+    "PACS_70_5_6_arc_pref": pow(10, -3),
+    "PACS_70_5_6_arc_flux_unit": True,
+
+    "PACS_100_6_8_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/PACS_100_6_8_arc.fits",
+    "PACS_100_6_8_arc_flux": ["flux"],
+    "PACS_100_6_8_arc_err": ["snrnoise"],
+    "PACS_100_6_8_arc_flag": [],
+    "PACS_100_6_8_arc_wave": [pacs100],
+    "PACS_100_6_8_arc_pref": pow(10, -3),
+    "PACS_100_6_8_arc_flux_unit": True,
+
+    "twomass_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/twomass_2_arc.fits",
+    "twomass_2_arc_flux": ["j_m", "h_m", "k_m"],
+    "twomass_2_arc_err": ["j_msigcom", "h_msigcom", "k_msigcom"],
+    "twomass_2_arc_flag": ["ph_qual"],
+    "twomass_2_arc_wave": [j_2mass, h_2mass, k_2mass],
+    "twomass_2_arc_pref": 1,
+    "twomass_2_arc_flux_unit": False,
+
+    "gaia_dr2_edr3": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/gaia_dr2_edr3.fits",
     "gaia_dr2_edr3_flux": ["phot_g_mean_mag_g2", "phot_bp_mean_mag_g2", "phot_rp_mean_mag_g2",
                            "phot_g_mean_mag_ge3", "phot_bp_mean_mag_ge3", "phot_rp_mean_mag_ge3"],
     "gaia_dr2_edr3_err": ["g_mean_mag_err_g2", "bp_mean_mag_err_g2", "rp_mean_mag_err_g2",
