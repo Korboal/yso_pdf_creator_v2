@@ -3,7 +3,7 @@ import matplotlib
 import numpy as np
 
 file_category = "all"               # Purely for naming purposes of the outputs. Useful if need different samples
-gaia_table_version = 46             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
+gaia_table_version = 45             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
 save_pdfs = False                   # If want to save images as PDFs, increases the run time quite a bit
 debug_mode = True                   # Debug mode: show parameters and images, do NOT save anything
 save_images_if_not_debug = False    # If want to save images, while not debugging
@@ -28,7 +28,7 @@ do_vvvdr4_astroquery = False
 recalculate_sedfitter_param_ranges = False
 recalculate_folder = "sedfitter/fitinfo/spusmi/" #"sedfitter/fitinfo/spsi/"
 
-sed_fits_to_do = "0001001"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
+sed_fits_to_do = "0010000"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
 #sed_fits_to_do = "0000001"
 
 remove_ztf_peak_periodogram_days = []   # 1

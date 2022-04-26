@@ -48,7 +48,7 @@ def write_gaia_info_for_one_star(canvas_to_use: canvas.Canvas, star_obj: Star):
 
     strings_to_write = np.array([f"GEDR3: {star_obj.source_id}",
                                  f"SIMBAD: {star_obj.name_simbad}",
-                                 f"Types: {star_obj.main_type_simbad}", cleaned_alt_type,
+                                 f"SIMBAD types: {star_obj.main_type_simbad}", cleaned_alt_type,
                                  f"Dist GE3: {dist_txt}",
                                  f"Extinction G2: {format_decim(star_obj.extinction_g2, 4)} mag",
                                  f"G mag G2: {format_decim(star_obj.g_mag_g2, 4)} mag",

@@ -1,7 +1,7 @@
 import unittest
 import tools
 import numpy as np
-import light_curve_V3
+import lightcurve_class
 import sed_linefit_v4_0
 import config_file as cf
 
@@ -11,56 +11,149 @@ class MyTestCase(unittest.TestCase):
     # Test light curve
 
     def test_fit_sin(self):
-        N, amp, phase, offset, noise = 1000, 1., .5, 4., 3
+        test_lc = create_light_curve_class()
 
-        for period in range(10, 1000, 10):
-            tt = np.linspace(0, 3 * period, N)
+        number_points, amp, phase, offset = 100, 1., .5, 4.
+
+        test_lc.data_length = number_points
+
+        for period in range(10, 50, 10):
+            test_lc.data_t = np.linspace(0, 3 * period, number_points)
             omega = 2. * np.pi / period
-            yy = amp * np.sin(omega * tt + phase) + offset
+            test_lc.data_y = amp * np.sin(omega * test_lc.data_t + phase) + offset
 
-            res1, res2, res3, res4 = light_curve_V3.fit_sin(tt, yy, np.ones(np.size(tt)), 0)
-            self.assertAlmostEqual(period, res1['period'])
+            test_lc.fit_light_curve()
+            self.assertAlmostEqual(period, test_lc.period_fit)
 
     def test_fit_sin_with_const_period(self):
-        N, amp, phase, offset, noise = 1000, 1., .5, 4., 3
+        N, amp, phase, offset, noise = 400, 1., .5, 4., 3
 
-        for period in range(10, 1000, 10):
-            tt = np.linspace(0, 3 * period, N)
-            omega = 2. * np.pi / period
-            yy = amp * np.sin(omega * tt + phase) + offset
+        test_lc = create_light_curve_class()
+        test_lc.data_length = N
 
-            res1 = light_curve_V3.fit_sin_with_const_period(tt, yy, np.ones(np.size(tt)), period)
-            self.assertAlmostEqual(period, res1['period'])
-            self.assertAlmostEqual(amp, res1['amp'])
+        period = 33.62
 
-    def test_convert_data_to_three_arrays(self):
-        res1, res2, res3 = light_curve_V3.convert_data_to_three_arrays(np.array([1, 2, 3]))
-        self.assertEqual(1, res2)
-        self.assertEqual(2, res3)
-        self.assertEqual(3, res1)
+        test_lc.data_t = np.linspace(0, 3 * period, N)
+        omega = 2. * np.pi / period
+        test_lc.data_y = amp * np.sin(omega * test_lc.data_t + phase) + offset
 
-        res1, res2, res3 = light_curve_V3.convert_data_to_three_arrays(np.array([]))
+        test_lc.fit_light_curve()
+        self.assertAlmostEqual(period, test_lc.period_fit)
+        self.assertAlmostEqual(amp, test_lc.fit_result['amp'])
+
+    def test_remove_long_term(self):
+        mean = 5.2
+        slope = 3.5
+
+        x = np.linspace(0, 10, 11)
+        y = slope * x + mean
+
+        ls_test = prep_light_curve_class(x, y)
+
+        ls_test.remove_long_term_trend()
+        self.assertAlmostEqual(mean, np.mean(ls_test.data_y))
+
+    def test_choose_spec_window(self):
+        x = np.linspace(0, 10, 11)
+        min_time = 3.5
+        max_time = 6.5
+        ls_test = prep_light_curve_class(x, np.zeros(np.size(x)))
+
+        ls_test.choose_spectral_window(min_time, max_time)
+        self.assertAlmostEqual([4, 5, 6], list(ls_test.data_t))
+
+    def test_creation_gaia_lightcurve_class(self):
+        ls_test = lightcurve_class.LightCurveGaia(None, "BP")
+        ls_test = lightcurve_class.LightCurveGaia(None, "g")
+        ls_test = lightcurve_class.LightCurveGaia(None, "Rp")
+
+        self.assertRaises(ValueError, lightcurve_class.LightCurveGaia, None, "r")
+
+
+    def test_gaia_convert_data_to_three_arrays(self):
+        ls_test = lightcurve_class.LightCurveGaia(None, "G")
+
+        res1, res2, res3, res4 = ls_test.convert_gaia_data_to_three_arrays(np.array([1, 2, 3]))
+        self.assertEqual(1, res1)
+        self.assertEqual(2, res2)
+        self.assertEqual(3, res3)
+        self.assertEqual(1, res4)
+
+        res1, res2, res3, res4 = ls_test.convert_gaia_data_to_three_arrays(np.array([]))
+        self.assertEqual([], list(res1))
         self.assertEqual([], list(res2))
         self.assertEqual([], list(res3))
-        self.assertEqual([], list(res1))
+        self.assertEqual(0, res4)
 
-        res1, res2, res3 = light_curve_V3.convert_data_to_three_arrays(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
-        self.assertEqual([1, 4, 7], list(res2))
-        self.assertEqual([2, 5, 8], list(res3))
-        self.assertEqual([3, 6, 9], list(res1))
+        res1, res2, res3, res4 = ls_test.convert_gaia_data_to_three_arrays(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+        self.assertEqual([1, 4, 7], list(res1))
+        self.assertEqual([2, 5, 8], list(res2))
+        self.assertEqual([3, 6, 9], list(res3))
+        self.assertEqual(3, res4)
+
+
+    def test_creation_ztf_lightcurve_class(self):
+        ls_test = lightcurve_class.LightCurveZTF(None, "G")
+        ls_test = lightcurve_class.LightCurveZTF(None, "r")
+        ls_test = lightcurve_class.LightCurveZTF(None, "i")
+
+        self.assertRaises(ValueError, lightcurve_class.LightCurveZTF, None, "rp")
+
+
+    def test_ztf_convert_data_to_three_arrays(self):
+        ls_test = lightcurve_class.LightCurveZTF(None, "G")
+
+        res1, res2, res3, res4 = ls_test.convert_ztf_data_to_three_arrays(np.array([[1], [2], [3]]))
+        self.assertEqual(1, res1)
+        self.assertEqual(2, res2)
+        self.assertEqual(3, res3)
+        self.assertEqual(1, res4)
+
+        res1, res2, res3, res4 = ls_test.convert_ztf_data_to_three_arrays(np.array([]))
+        self.assertEqual([], list(res1))
+        self.assertEqual([], list(res2))
+        self.assertEqual([], list(res3))
+        self.assertEqual(0, res4)
+
+        res1, res2, res3, res4 = ls_test.convert_ztf_data_to_three_arrays(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+        self.assertEqual([1, 2, 3], list(res1))
+        self.assertEqual([4, 5, 6], list(res2))
+        self.assertEqual([7, 8, 9], list(res3))
+        self.assertEqual(3, res4)
+
+    def test_remove_close_measurements(self):
+        x = np.array([0, 0.5, 1.1, 1.6, 1.7, 1.8, 2, 2.2]) * lightcurve_class.min_time_between_measurements
+        y = np.zeros(np.size(x))
+
+        ls_test = prep_light_curve_class(x, y)
+
+        x, y, err = lightcurve_class.remove_close_ztf_measurements(ls_test.data_t, ls_test.data_y, ls_test.data_error)
+
+        self.assertAlmostEqual([0, 1.1 * lightcurve_class.min_time_between_measurements, 2.2 * lightcurve_class.min_time_between_measurements], list(x))
+
+    def test_bin_nights(self):
+        x = np.array([1, 1.1, 1.3, 1.5, 2, 2.6, 2.7, 3.6, 4, 5])
+        y = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        err = np.zeros(np.size(x))
+
+        res1, res2, res3 = lightcurve_class.bin_nights(x, y, err)
+        self.assertAlmostEqual([1, 2, 3, 4, 5], list(res1))
+        self.assertAlmostEqual([1.5, 5, 7, 8, 9], list(res2))
+
+    def test_find_n_peaks_periodogram(self):
+        freq = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        power = [0, 0.1, 0.4, 0.3, 0.2, 0.1, 0.3, 0.5, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1, 0.05]
+
+        freq_peak, _ = lightcurve_class.find_n_peaks_periodogram(freq, power, 2)
+        self.assertAlmostEqual([9, 3], list(freq_peak))
 
     def test_get_clean_data(self):
-        clean_data, dirty_data = light_curve_V3.get_clean_data(np.asarray(["G", "G", "BP", "RP"]), "G", np.asarray([0, 0, 0, 0]),
-                                                               np.asarray([10, 20, 30, 40]), np.asarray([1, 2, 3, 4]), np.asarray([100, 200, 300, 400]),
-                                                               np.asarray([True, False, False, False]), np.asarray([5, 6, 7, 8]))
-        self.assertEqual(6, clean_data[0][0])
+        clean_data, dirty_data = lightcurve_class.separate_gaia_light_curve(np.asarray(["G", "G", "BP", "RP"]), "G", np.asarray([10, 20, 30, 40]), np.asarray([0, 0, 0, 0]),
+                                                               np.asarray([100, 200, 300, 400]), np.asarray([True, False, False, False]), np.asarray([1, 2, 3, 4]))
+        self.assertEqual(2, clean_data[0][0])
         self.assertEqual(200, clean_data[0][1])
-        self.assertEqual(5, dirty_data[0][0])
+        self.assertEqual(1, dirty_data[0][0])
         self.assertEqual(100, dirty_data[0][1])
-
-    def test_calc_mag_error(self):
-        res = light_curve_V3.calc_mag_error(375.02, 1.0374)
-        self.assertAlmostEqual(0.0030, res, delta=0.0001)
 
     # Test sedfit linefit
 
@@ -293,25 +386,26 @@ class MyTestCase(unittest.TestCase):
                                                           np.array([11, 12, 13, 14, 15]), 3, 3, 0)
         self.assertEqual([3], list(res1))
 
-    def test_calculate_pearson_chi_squared(self):
-        time = np.array([0, 1, 2, 3])
-        y = np.array([1, 2, 3, 4])
-        func = lambda xx: xx + 1
-        res = tools.calculate_lightcurve_fit_error(time, y, np.zeros(np.size(y)), func)
-        self.assertEqual(0, res)
-
-        #time = np.array([0, 1, 2, 3])
-        #y = np.array([1, 1, 4, 4])
-        #func = lambda xx: xx + 1
-        #res = tools.calculate_lightcurve_fit_error(time, y, np.zeros(np.size(y)), func)
-        #self.assertAlmostEqual(5/6, res)
-
-    # Test BB fits
-
-    #def test_wiens_law(self):
-        #res = my_sedfit_v6.wiens_law([0.5 * np.power(10.0, -6)], [10.0])
-        #self.assertAlmostEqual(5796, res, delta=1)
-
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def create_light_curve_class() -> lightcurve_class.LightCurve:
+    light_curve_test = lightcurve_class.LightCurve("test_band", "test_lc", False, False, False)
+    return light_curve_test
+
+def prep_light_curve_class(x, y, error=None) -> lightcurve_class.LightCurve:
+    if np.size(x) != np.size(y):
+        ValueError("x and y shapes are not the same")
+
+    ls_class = create_light_curve_class()
+    ls_class.data_t = x
+    ls_class.data_y = y
+    if error is not None:
+        ls_class.data_error = error
+    else:
+        ls_class.data_error = np.zeros(np.size(x))
+    ls_class.data_length = np.size(x)
+
+    return ls_class

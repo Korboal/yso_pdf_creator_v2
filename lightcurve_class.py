@@ -1964,6 +1964,3 @@ def bin_nights(time, mag, error):
 
     return time_binned, mag_binned, error_binned
 
-
-def test():
-    lam = np.array().astype(float)
