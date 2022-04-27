@@ -5,7 +5,7 @@ from os.path import isfile, join
 import time
 import config_file as cf
 from typing import Union, Tuple
-from star_class import Star
+#from star_class import Star
 import os
 
 
@@ -266,7 +266,7 @@ def get_specific_column_from_data_str(data, field_name: str) -> np.ndarray:
     return column
 
 
-def find_min_max_x_for_plot(star_obj: Star) -> Tuple[float, float]:
+def find_min_max_x_for_plot(star_obj) -> Tuple[float, float]:
     """
     Finds the min/max value from Star object for plotting. Checks x_good, x_upper and x_viz.
 
@@ -387,7 +387,7 @@ def find_filter(wavelength: float) -> str:
         raise ValueError('Unknown wavelength input')
 
 
-def get_sedfitter_star_data(star_obj: Star, filters_total: list) -> np.ndarray:
+def get_sedfitter_star_data(star_obj, filters_total: list) -> np.ndarray:
     """
     Sorts and converts star's data to SEDFitter ready to use data. Filters to find are given in filters_total according to names and order. 0-s are given if no filter is found.
 

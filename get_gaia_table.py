@@ -27,6 +27,7 @@ def get_star_info(data, source_id: str) -> dict:
     """
     index = find_index_with_id(data, str(source_id))
 
+    source_id_g2 = get_field_from_data(data, index, cf.source_id_g2)
     par_ge3 = get_field_from_data(data, index, cf.field_name_parallax_g3)   # should be in mas units
     distance = 1000.0 / par_ge3
     par_error_ge3 = get_field_from_data(data, index, cf.field_name_parallax_error_g3)   # should be in mas units
@@ -63,7 +64,7 @@ def get_star_info(data, source_id: str) -> dict:
             "teff_template_g2": teff_template_g2, "teff_val_g2": teff_val_g2, "name_simbad": name_simbad, "main_type_simbad": main_type_simbad,
             "other_types_simbad": other_types_simbad, "g_mag_ge3": g_mag_ge3, "bp_mag_ge3": bp_mag_ge3,
             "rp_mag_ge3": rp_mag_ge3, "radius_g2": radius_g2, "radius_lower_g2": radius_lower_g2,
-            "radius_upper_g2": radius_upper_g2}
+            "radius_upper_g2": radius_upper_g2, "source_id_g2": source_id_g2}
 
 
 def get_field_from_data(data, index: int, field: str, convert_to_float=True) -> Union[float, str]:

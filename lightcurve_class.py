@@ -277,8 +277,8 @@ class LightCurve:
             draw_points_err_bar(self.data_rej_t, self.data_rej_y, self.data_rej_error, fmt='x', label="Rejected data")
             draw_empty_graph([self.data_length, self.data_rej_length])
 
-            prepare_plot(f"Original data of {self.band_name} {self.light_curve_name}", "Time [days]",
-                         f"{self.band_name} {self.light_curve_name} band [mag]", self.show_image, self.save_image,
+            prepare_plot(f"Original data of {self.light_curve_name} {self.band_name}", "Time [days]",
+                         f"{self.light_curve_name} {self.band_name} band [mag]", self.show_image, self.save_image,
                          image_output_png=image_output_png, image_output_pdf=image_output_pdf, save_pdf=self.save_pdfs)
 
     def draw_fitted_light_curve(self, image_output_png=None, image_output_pdf=None, do_second_fit=False,
@@ -686,7 +686,7 @@ class LightCurve:
         z = self.data_t
         sc = plt.scatter(x, self.data_y, c=z, cmap=cm, linewidth=1)
         plt.colorbar(sc, label='Time [days]')
-        prepare_plot(f"Folded {self.light_curve_name} {self.band_name}", f"Phase with period {round(self.period_fit, 3)} d", "Band [mag]", True, False, invert_yaxis=True)
+        prepare_plot(f"Folded {self.light_curve_name} {self.band_name}", f"Phase with period {round(self.period_fit, 3)} d", "Band [mag]", True, False, invert_yaxis=True, show_legend=False)
 
 
 class LightCurveGaia(LightCurve):

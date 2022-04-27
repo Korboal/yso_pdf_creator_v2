@@ -185,11 +185,6 @@ def main():
 
                 del star_object
 
-    data = tools.load_data("classifying_light_curves/trust_gaia_extra.txt")
-    try:
-        ids_to_do = data[:, 0].astype(str)
-    except:
-        ids_to_do = data.astype(str)
 
     for i in range(np.size(ids)):   # Go through each ID, at the end deleting each one to save memory
         star_object = Star(ids[i], x_match_obj)

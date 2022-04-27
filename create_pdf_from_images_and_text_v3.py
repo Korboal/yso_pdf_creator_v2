@@ -55,7 +55,8 @@ def write_gaia_info_for_one_star(canvas_to_use: canvas.Canvas, star_obj: Star):
                                  f"G mag GE3: {format_decim(star_obj.g_mag_ge3, 4)} mag",
                                  f"Slope 20: {format_decim(star_obj.ir_slope20, 2)}",
                                  f"Slope 25: {format_decim(star_obj.ir_slope25, 2)}",
-                                 f"Per G2: {format_decim(star_obj.period_g2, 2)} ± {format_decim(star_obj.period_err_g2, 2)} d"])
+                                 f"Per G2: {format_decim(star_obj.period_g2, 2)} ± {format_decim(star_obj.period_err_g2, 2)} d",
+                                 f"GDR2: {star_obj.source_id_g2}"])
     """,
                                  "My per: " + str(format_decim(star_obj.gaia_g_light_curve.period_fit, 2)) + " days",
                                  "ZTF g per: " + str(format_decim(star_obj.ztf_g_light_curve.period_fit, 2)) + " d",

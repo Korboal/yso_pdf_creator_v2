@@ -153,6 +153,7 @@ class Star:
         self.radius_g2 = state["radius_g2"]
         self.radius_lower_g2 = state["radius_lower_g2"]
         self.radius_upper_g2 = state["radius_upper_g2"]
+        self.source_id_g2 = state["source_id_g2"]
 
     def print_source_id(self):
         """
@@ -433,7 +434,7 @@ class Star:
             self.ztf_r_light_curve.remove_long_term_trend()
             self.ztf_i_light_curve.remove_long_term_trend()
 
-        #lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 25, 35)  # 9.353221424477987
+        #lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 9*2, 9.7*2)  # 9.353221424477987
 
         """lightcurve_class.slider_folded_light_curve(self.ztf_r_light_curve, 150, 500)
         #lightcurve_class.slider_folded_light_curve_freq(self.ztf_g_light_curve, 0.05, 1)
@@ -466,8 +467,8 @@ class Star:
         #self.ztf_g_light_curve.draw_folded_with_colored_time()
         #self.ztf_r_light_curve.draw_folded_with_colored_time()
 
-        lightcurve_class.draw_g_r_raw_light_curve(self.ztf_g_light_curve, self.ztf_r_light_curve)
-        lightcurve_class.plot_g_r_variation(self.ztf_g_light_curve, self.ztf_r_light_curve)
+        #lightcurve_class.draw_g_r_raw_light_curve(self.ztf_g_light_curve, self.ztf_r_light_curve)
+        #lightcurve_class.plot_g_r_variation(self.ztf_g_light_curve, self.ztf_r_light_curve)
 
         #self.ztf_r_light_curve.fitting_example_frequency_periodogram()
 
