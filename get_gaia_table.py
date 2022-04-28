@@ -27,7 +27,7 @@ def get_star_info(data, source_id: str) -> dict:
     """
     index = find_index_with_id(data, str(source_id))
 
-    source_id_g2 = get_field_from_data(data, index, cf.source_id_g2)
+    source_id_g2 = get_field_from_data(data, index, cf.source_id_g2, convert_to_float=False)
     par_ge3 = get_field_from_data(data, index, cf.field_name_parallax_g3)   # should be in mas units
     distance = 1000.0 / par_ge3
     par_error_ge3 = get_field_from_data(data, index, cf.field_name_parallax_error_g3)   # should be in mas units

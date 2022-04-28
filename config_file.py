@@ -17,7 +17,7 @@ do_multiband_periodogram = False
 neowise_lightcurve_fit = False
 
 sed_line_fit = False        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
-do_pdf_creation = False     # Make PDFs for each star with their information and fits
+do_pdf_creation = True     # Make PDFs for each star with their information and fits
 do_bb_fit = False           # Do fits using my own blackbody fits (bad)
 save_bb_variables = False   # Save variables for blackbody fit
 do_sedfitter = False        # Use SEDFitter to fit star's models. Only on fast PC

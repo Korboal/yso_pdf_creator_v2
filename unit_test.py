@@ -1,5 +1,4 @@
 import unittest
-
 import star_class
 import tools
 import numpy as np
@@ -460,6 +459,7 @@ class MyTestCase(unittest.TestCase):
         res = tools.linear_best_fit([-1, 0, 0], [4, 0, 2])
         self.assertAlmostEqual(-3, res[1])
         self.assertAlmostEqual(1, res[0])
+
 
 if __name__ == '__main__':
     unittest.main()

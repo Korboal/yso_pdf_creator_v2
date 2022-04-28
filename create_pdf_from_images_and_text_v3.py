@@ -94,7 +94,7 @@ def write_gaia_info_for_one_star(canvas_to_use: canvas.Canvas, star_obj: Star):
 
 def draw_hr_diagram_with_star(data, star_obj: Star, save_location: str):
     """
-    Takes all star's data from a catalogue and plots on a HR diagram (BP-RP vs G_abs). Then plots the specific star on top of it as a red point.
+    Takes all star's data from a catalogue and plots on an HR diagram (BP-RP vs G_abs). Then plots the specific star on top of it as a red point.
 
     :param data: FITS data table
     :param star_obj: Star object
