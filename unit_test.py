@@ -1,4 +1,6 @@
 import unittest
+
+import star_class
 import tools
 import numpy as np
 import lightcurve_class
@@ -216,6 +218,61 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual([13, 15, 16], error_up)
         self.assertEqual([23, 25, 26], x_up)
 
+    def test_sed_linear_fit(self):
+        star_obj = star_class.Star("12345", None)
+        star_obj.x_sed_linear_fit = np.power(10.0, np.array([-1, 0, 0]))
+        star_obj.y_sed_linear_fit = np.power(10.0, np.array([4, 0, 2]))
+        star_obj.error_sed_linear_fit = np.array([0, 0, 0])
+
+        res = sed_linefit_v4_0.fit_sed_linear_fit(star_obj)
+        self.assertAlmostEqual(-1, res)
+
+    def test_calculate_sed_excess_from_points(self):
+        x = np.power(10.0, np.array([-2, -1, 0, 0]))
+        y = np.power(10.0, np.array([10, 4, 0, 2]))
+        err = np.array([0, 0, 0, 0])
+        const = -1
+
+        res = sed_linefit_v4_0.calculate_sed_excess_from_points(x, y, err, const)
+
+        self.assertAlmostEqual([10.0**0, 0.0, 10.0], list(res[0:3]))
+        self.assertAlmostEqual(10.0**(-2), res[6])
+        self.assertAlmostEqual(1000.0, res[7])
+
+    def test_calculate_ir_slope(self):
+        star_obj = star_class.Star("12345", None)
+        star_obj.x_good = np.power(10.0, np.array([-1, 0, 0]))
+        star_obj.y_good = np.power(10.0, np.array([4, 0, 2]))
+        star_obj.error_good = np.array([0, 0, 0])
+        star_obj.x_upper = np.array([])
+        star_obj.y_upper = np.array([])
+        star_obj.error_upper = np.array([])
+
+        res = sed_linefit_v4_0.calculate_ir_slope(star_obj, False, False, False, ir_slope_end=1000)
+        self.assertAlmostEqual(-3, res[0])
+
+    def test_get_min_and_max_x(self):
+        ar1 = [0, 1, 2, 3]
+        ar2 = [-1, -3]
+
+        minv, maxv = sed_linefit_v4_0.get_min_and_max_x(ar1, ar2)
+
+        self.assertEqual(-3, minv)
+        self.assertEqual(3, maxv)
+
+    def test_extrapolate_and_integrate_sed_excess(self):
+        star_obj = star_class.Star("12345", None)
+        star_obj.x_good = np.array([3 * 10.0**(-6), 10 * 10.0**(-6), 23 * 10.0**(-6)])
+        star_obj.y_good = np.array([1.5625 * 10.0**(17), 1.5625 * 10.0**(17), 1.5625 * 10.0**(17)])
+        star_obj.error_good = np.array([0, 0, 0])
+        star_obj.x_upper = np.array([])
+        star_obj.y_upper = np.array([])
+        star_obj.error_upper = np.array([])
+        star_obj.sed_linefit_rayleigh_jeans_const = -1
+
+        res = sed_linefit_v4_0.extrapolate_and_integrate_sed_excess(star_obj, False, False, False)
+        self.assertAlmostEqual((np.log10(25 * 10.0**(-6)) - np.log10(4 * 10.0**(-6))) * (np.log10(1.5625 * 10.0**(17)) - np.log10(6.4 * 10.0**(14))) / 2, res[4] - res[6])
+
     def test_calc_arith_mean(self):
         res = sed_linefit_v4_0.calc_weighted_arith_mean(np.array([7, 5, 8, 4]), np.array([9, 3, 2, 1]))
         self.assertEqual(98/15, res)
@@ -386,6 +443,23 @@ class MyTestCase(unittest.TestCase):
                                                           np.array([11, 12, 13, 14, 15]), 3, 3, 0)
         self.assertEqual([3], list(res1))
 
+    def test_find_filter(self):
+        res = tools.find_filter(cf.g_dr2)
+        self.assertEqual("GDR2_G", res)
+        self.assertRaises(ValueError, tools.find_filter, 10)
+
+    def test_identify_yso_class(self):
+        self.assertEqual("Class_I", tools.identify_yso_class(1))
+        self.assertEqual("Class_I", tools.identify_yso_class(10))
+        self.assertEqual("Class_II", tools.identify_yso_class(-0.1))
+        self.assertEqual("Class_II", tools.identify_yso_class(-0.4))
+        self.assertEqual("Class_III", tools.identify_yso_class(-1.6))
+        self.assertEqual("Class_III", tools.identify_yso_class(-4))
+
+    def test_linear_best_fit(self):
+        res = tools.linear_best_fit([-1, 0, 0], [4, 0, 2])
+        self.assertAlmostEqual(-3, res[1])
+        self.assertAlmostEqual(1, res[0])
 
 if __name__ == '__main__':
     unittest.main()

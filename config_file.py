@@ -115,7 +115,7 @@ ir_excess_start = 2.2 * pow(10, -6)     # Done as an indication of where fits ar
 ir_excess_end = 25.0 * pow(10, -6)      # should not be changed from these values
 
 # Classification of YSO objects based on starting slope values:
-yso_classes = [["Class_1", "0.0"], ["Class_2", "-1.5"], ["Class_3", "-20.0"], ["Non_YSO", "-20.5"]]
+yso_classes = [["Class_I", "0.0"], ["Class_II", "-1.5"], ["Class_III", "-20.0"], ["Non_YSO", "-20.5"]]
 #2D array. Each component: first name, then at what slope the classification starts (it ends wherever next class starts)
 
 # Config for light curves
