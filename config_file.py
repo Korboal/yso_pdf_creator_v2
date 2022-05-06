@@ -1,12 +1,11 @@
 import datetime
 import matplotlib
 import numpy as np
-import tools
 
-file_category = "all"               # Purely for naming purposes of the outputs. Useful if need different samples
+file_category = "lav"               # Purely for naming purposes of the outputs. Useful if need different samples
 gaia_table_version = 46             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
 save_pdfs = False                   # If want to save images as PDFs, increases the run time quite a bit
-debug_mode = False                   # Debug mode: show parameters and images, do NOT save anything
+debug_mode = True                   # Debug mode: show parameters and images, do NOT save anything
 save_images_if_not_debug = False    # If want to save images, while not debugging
 use_vizier_data = False             # If want to also plot data from Vizier
 
@@ -16,8 +15,8 @@ do_multiband_periodogram = False
 
 neowise_lightcurve_fit = False
 
-sed_line_fit = False        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
-do_pdf_creation = True     # Make PDFs for each star with their information and fits
+sed_line_fit = True        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
+do_pdf_creation = False     # Make PDFs for each star with their information and fits
 do_bb_fit = False           # Do fits using my own blackbody fits (bad)
 save_bb_variables = False   # Save variables for blackbody fit
 do_sedfitter = False        # Use SEDFitter to fit star's models. Only on fast PC
@@ -29,7 +28,7 @@ do_vvvdr4_astroquery = False
 recalculate_sedfitter_param_ranges = False
 recalculate_folder = "sedfitter/fitinfo/spusmi/" #"sedfitter/fitinfo/spsi/"
 
-sed_fits_to_do = "0000000"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
+sed_fits_to_do = "1111111"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
 #sed_fits_to_do = "0000001"
 
 remove_ztf_peak_periodogram_days = []   # 1
@@ -43,7 +42,7 @@ remove_ztf_peak_periodogram_days = []   # 1
 # 6th bit: integral of the excess
 # 7th bit: plot image
 
-ids_to_calculate = np.array([]).astype(str)
+ids_to_calculate = np.array(["5615280482355060352"]).astype(str)
 
 detrend = False
 do_fit_with_constant_period = False
@@ -97,8 +96,13 @@ if not save_images_if_not_debug and not debug_mode:     # If one does not want t
 
 # Input Gaia table (includes the gaia_table_version from above)
 
-input_gaia_table_path = f"../../Unige/2021-2022_Master_project/Data/Processed_tables/ge3_yso_pot_10_pp_g2_ge3_" \
-                        f"simbad_v{gaia_table_version}.fits"
+if file_category == "all" or file_category == "lpv":
+    input_gaia_table_path = f"../../Unige/2021-2022_Master_project/Data/Processed_tables/ge3_yso_pot_10_pp_g2_ge3_" \
+                            f"simbad_v{gaia_table_version}.fits"
+    #extra_catalogues_dir = extra_catalogues_dir_lpv
+if file_category == "lav":
+    input_gaia_table_path = "../../Unige/2021-2022_Master_project/Data/lav/edr3_lav_reduced_true.fits"
+    #extra_catalogues_dir = extra_catalogues_dir_lav
 
 # Config for SED linear fit:
 
@@ -264,7 +268,7 @@ output_sed_temp_fits_txt = f"{textfiles_output_folder}{date_time_to_use}__sed_te
 
 output_sed_temp_pic = f"output_pictures/{file_category}/sed_temps/"
 
-foundation_txt = "#source_id126\tmir_exists"
+foundation_txt = "#source_id126\tpoints_slope_25\tpoints_slope_20\tmir_exists"
 all_ratio_txt = "\tlast_wv\tlast_ratio_err\tlast_ratio\tavg_diff\tavg_ratio\t" \
                         "biggest_ratio_err\tbiggest_ratio_wl\tbiggest_ratio"
 mir_ratio_txt = "\tlast_wv_mir\tlast_ratio_err_mir\tlast_ratio_mir\tavg_diff_mir\tavg_ratio_mir\t" \
@@ -381,7 +385,7 @@ rp_edr3_F0 = 2555.0
 
 # taken out of the extra catalogues:
 # "IRS_2_arc", "SPIRE_250_17_6_arc", "SPIRE_350_23_9_arc", "SPIRE_500_35_2_arc", "PACS_160_10_7_arc"
-extra_catalogues_dir = {
+extra_catalogues_dir_lpv = {
     "table_names": ["WISE_2_arc", "ALLWISE_2_arc", "SEIP_2_arc", "C2D_reliable_stars_2_arc", "C2D_cloud_2_arc",
                     "CSI_2264_2_arc",
                     "Cygnus_X_cat_2_arc", "GLIMPSE_I_2_arc", "GLIMPSE_II_2_arc", "GLIMPSE_II_Epoch_1_2_arc",
@@ -640,222 +644,78 @@ extra_catalogues_dir = {
     }
 
 extra_catalogues_dir_lav = {
-    "table_names": ["WISE_2_arc", "ALLWISE_2_arc", "SEIP_2_arc", "C2D_reliable_stars_2_arc", "C2D_cloud_2_arc",
-                    "CSI_2264_2_arc",
-                    "Cygnus_X_cat_2_arc", "GLIMPSE_I_2_arc", "GLIMPSE_II_2_arc", "GLIMPSE_II_Epoch_1_2_arc",
-                    "GLIMPSE_II_Epoch_2_2_arc", "GLIMPSE_3D_2_arc", "GLIMPSE_3D_Epoch_1_2_arc",
-                    "GLIMPSE_3D_Epoch_2_2_arc", "GLIMPSE_Vela_2_arc", "GLIMPSE_SMOG_2_arc",
-                    "GLIMPSE_Cygnus_2_arc", "MIPSGAL_2_arc", "Taurus_2_arc", "YSO_GGD_2_arc",
-                    "YSO_L1688_2_arc", "PACS_70_5_6_arc", "PACS_100_6_8_arc",
-                    "twomass_2_arc", "gaia_dr2_edr3"],
+    "table_names": ["WISE_2_arc", "ALLWISE_2_arc", "SEIP_2_arc", "C2D_dr4_2_arc", "GLIMPSE_2_arc",
+                    "MIPSGAL_2_arc", "twomass_2_arc", "gaia_edr3"],
 
-    "WISE_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/WISE_2_arc_.fits",
-    "WISE_2_arc_flux": ["w1mpro", "w2mpro", "w3mpro", "w4mpro"],
-    "WISE_2_arc_err": ["w1sigmpro", "w2sigmpro", "w3sigmpro", "w4sigmpro"],
+    "WISE_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/WISE_2_arc_.fits",
+    "WISE_2_arc_flux": ["W1mag", "W2mag", "W3mag", "W4mag"],
+    "WISE_2_arc_err": ["e_W1mag", "e_W2mag", "e_W3mag", "e_W4mag"],
     "WISE_2_arc_flag": ["ph_qual"],
     "WISE_2_arc_wave": [W1, W2, W3, W4],
     "WISE_2_arc_pref": 1,
     "WISE_2_arc_flux_unit": False,
 
-    "ALLWISE_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/ALLWISE_2_arc_.fits",
-    "ALLWISE_2_arc_flux": ["w1mpro", "w2mpro", "w3mpro", "w4mpro"],
-    "ALLWISE_2_arc_err": ["w1sigmpro", "w2sigmpro", "w3sigmpro", "w4sigmpro"],
-    "ALLWISE_2_arc_flag": ["ph_qual"],
+    "ALLWISE_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/ALLWISE_2_arc_.fits",
+    "ALLWISE_2_arc_flux": ["W1mag", "W2mag", "W3mag", "W4mag"],
+    "ALLWISE_2_arc_err": ["e_W1mag", "e_W2mag", "e_W3mag", "e_W4mag"],
+    "ALLWISE_2_arc_flag": ["qph"],
     "ALLWISE_2_arc_wave": [W1, W2, W3, W4],
     "ALLWISE_2_arc_pref": 1,
     "ALLWISE_2_arc_flux_unit": False,
 
-    "SEIP_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/SEIP_2_arc.fits",
-    "SEIP_2_arc_flux": ["i1_f_ap1", "i2_f_ap1", "i3_f_ap1", "i4_f_ap1", "m1_f_ap"],
-    "SEIP_2_arc_err": ["i1_df_ap1", "i2_df_ap1", "i3_df_ap1", "i4_df_ap1", "m1_df_ap"],
-    "SEIP_2_arc_flag": ["i1_fluxtype", "i2_fluxtype", "i3_fluxtype", "i4_fluxtype", "m1_fluxtype"],
+    "SEIP_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/SEIP_2_arc.fits",
+    "SEIP_2_arc_flux": ["F3.6Ap1", "F4.5Ap1", "F5.8Ap1", "F8.0Ap1", "F24-PSF"],
+    "SEIP_2_arc_err": ["e_F3.6Ap1", "e_F4.5Ap1", "e_F5.8Ap1", "e_F8.0Ap1", "e_F24-PSF"],
+    "SEIP_2_arc_flag": [],
     "SEIP_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
     "SEIP_2_arc_pref": pow(10, -6),
     "SEIP_2_arc_flux_unit": True,
 
-    "C2D_reliable_stars_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/C2D_reliable_stars_2_arc.fits",
-    "C2D_reliable_stars_2_arc_flux": ["ir1_flux_c", "ir2_flux_c", "ir3_flux_c", "ir4_flux_c", "mp1_flux_c",
-                                      "mp2_flux_c"],
-    "C2D_reliable_stars_2_arc_err": ["ir1_d_flux_c", "ir2_d_flux_c", "ir3_d_flux_c", "ir4_d_flux_c", "mp1_d_flux_c",
-                                     "mp2_d_flux_c"],
-    "C2D_reliable_stars_2_arc_flag": ["ir1_q_det_c", "ir2_q_det_c", "ir3_q_det_c", "ir4_q_det_c", "mp1_q_det_c",
-                                      "mp2_q_det_c"],
-    "C2D_reliable_stars_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
-    "C2D_reliable_stars_2_arc_pref": pow(10, -3),
-    "C2D_reliable_stars_2_arc_flux_unit": True,
+    "C2D_dr4_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/C2D_dr4_2_arc.fits",
+    "C2D_dr4_2_arc_flux": ["FIR1", "FIR2", "FIR3", "FIR4", "FMP1", "FMP2"],
+    "C2D_dr4_2_arc_err": ["no_error", "no_error", "no_error", "no_error", "no_error", "no_error"],
+    "C2D_dr4_2_arc_flag": [],
+    "C2D_dr4_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
+    "C2D_dr4_2_arc_pref": pow(10, -3),
+    "C2D_dr4_2_arc_flux_unit": True,
 
-    "C2D_cloud_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/C2D_cloud_2_arc.fits",
-    "C2D_cloud_2_arc_flux": ["ir1_flux_c", "ir2_flux_c", "ir3_flux_c", "ir4_flux_c", "mp1_flux_c", "mp2_flux_c"],
-    "C2D_cloud_2_arc_err": ["ir1_d_flux_c", "ir2_d_flux_c", "ir3_d_flux_c", "ir4_d_flux_c", "mp1_d_flux_c",
-                            "mp2_d_flux_c"],
-    "C2D_cloud_2_arc_flag": ["ir1_q_det_c", "ir2_q_det_c", "ir3_q_det_c", "ir4_q_det_c", "mp1_q_det_c", "mp2_q_det_c"],
-    "C2D_cloud_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
-    "C2D_cloud_2_arc_pref": pow(10, -3),
-    "C2D_cloud_2_arc_flux_unit": True,
+    "GLIMPSE_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/GLIMPSE_2_arc.fits",
+    "GLIMPSE_2_arc_flux": ["3_6mag", "4_5mag", "5_8mag", "8_0mag"],
+    "GLIMPSE_2_arc_err": ["e_3_6mag", "e_4_5mag", "e_5_8mag", "e_8_0mag"],
+    "GLIMPSE_2_arc_flag": [],
+    "GLIMPSE_2_arc_wave": [irac1, irac2, irac3, irac4],
+    "GLIMPSE_2_arc_pref": 1,
+    "GLIMPSE_2_arc_flux_unit": False,
 
-    "CSI_2264_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/CSI_2264_2_arc.fits",
-    "CSI_2264_2_arc_flux": ["mag_36", "mag_45", "mag_58", "mag_80", "mag_24"],
-    "CSI_2264_2_arc_err": ["err_36", "err_45", "err_58", "err_80", "err_24"],
-    "CSI_2264_2_arc_flag": [],
-    "CSI_2264_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
-    "CSI_2264_2_arc_pref": 1,
-    "CSI_2264_2_arc_flux_unit": False,
-
-    "Cygnus_X_cat_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/Cygnus_X_cat_2_arc.fits",
-    "Cygnus_X_cat_2_arc_flux": ["i1flux", "i2flux", "i3flux", "i4flux", "m24flux"],
-    "Cygnus_X_cat_2_arc_err": ["i1ferr", "i2ferr", "i3ferr", "i4ferr", "m24ferr"],
-    "Cygnus_X_cat_2_arc_flag": [],
-    "Cygnus_X_cat_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
-    "Cygnus_X_cat_2_arc_pref": pow(10, -6),
-    "Cygnus_X_cat_2_arc_flux_unit": True,
-
-    "GLIMPSE_I_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_I_2_arc.fits",
-    "GLIMPSE_I_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_I_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_I_2_arc_flag": [],
-    "GLIMPSE_I_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_I_2_arc_pref": pow(10, -3),
-    "GLIMPSE_I_2_arc_flux_unit": True,
-
-    "GLIMPSE_II_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_II_2_arc.fits",
-    "GLIMPSE_II_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_II_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_II_2_arc_flag": [],
-    "GLIMPSE_II_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_II_2_arc_pref": pow(10, -3),
-    "GLIMPSE_II_2_arc_flux_unit": True,
-
-    "GLIMPSE_II_Epoch_1_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_II_Epoch_1_2_arc.fits",
-    "GLIMPSE_II_Epoch_1_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_II_Epoch_1_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_II_Epoch_1_2_arc_flag": [],
-    "GLIMPSE_II_Epoch_1_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_II_Epoch_1_2_arc_pref": pow(10, -3),
-    "GLIMPSE_II_Epoch_1_2_arc_flux_unit": True,
-
-    "GLIMPSE_II_Epoch_2_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_II_Epoch_2_2_arc.fits",
-    "GLIMPSE_II_Epoch_2_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_II_Epoch_2_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_II_Epoch_2_2_arc_flag": [],
-    "GLIMPSE_II_Epoch_2_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_II_Epoch_2_2_arc_pref": pow(10, -3),
-    "GLIMPSE_II_Epoch_2_2_arc_flux_unit": True,
-
-    "GLIMPSE_3D_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_3D_2_arc.fits",
-    "GLIMPSE_3D_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_3D_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_3D_2_arc_flag": [],
-    "GLIMPSE_3D_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_3D_2_arc_pref": pow(10, -3),
-    "GLIMPSE_3D_2_arc_flux_unit": True,
-
-    "GLIMPSE_3D_Epoch_1_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_3D_Epoch_1_2_arc.fits",
-    "GLIMPSE_3D_Epoch_1_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_3D_Epoch_1_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_3D_Epoch_1_2_arc_flag": [],
-    "GLIMPSE_3D_Epoch_1_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_3D_Epoch_1_2_arc_pref": pow(10, -3),
-    "GLIMPSE_3D_Epoch_1_2_arc_flux_unit": True,
-
-    "GLIMPSE_3D_Epoch_2_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_3D_Epoch_2_2_arc.fits",
-    "GLIMPSE_3D_Epoch_2_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_3D_Epoch_2_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_3D_Epoch_2_2_arc_flag": [],
-    "GLIMPSE_3D_Epoch_2_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_3D_Epoch_2_2_arc_pref": pow(10, -3),
-    "GLIMPSE_3D_Epoch_2_2_arc_flux_unit": True,
-
-    "GLIMPSE_Vela_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_Vela_2_arc.fits",
-    "GLIMPSE_Vela_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_Vela_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_Vela_2_arc_flag": [],
-    "GLIMPSE_Vela_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_Vela_2_arc_pref": pow(10, -3),
-    "GLIMPSE_Vela_2_arc_flux_unit": True,
-
-    "GLIMPSE_SMOG_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_SMOG_2_arc.fits",
-    "GLIMPSE_SMOG_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_SMOG_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_SMOG_2_arc_flag": [],
-    "GLIMPSE_SMOG_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_SMOG_2_arc_pref": pow(10, -3),
-    "GLIMPSE_SMOG_2_arc_flux_unit": True,
-
-    "GLIMPSE_Cygnus_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/GLIMPSE_Cygnus_2_arc.fits",
-    "GLIMPSE_Cygnus_2_arc_flux": ["f3_6", "f4_5", "f5_8", "f8_0"],
-    "GLIMPSE_Cygnus_2_arc_err": ["df3_6", "df4_5", "df5_8", "df8_0"],
-    "GLIMPSE_Cygnus_2_arc_flag": [],
-    "GLIMPSE_Cygnus_2_arc_wave": [irac1, irac2, irac3, irac4],
-    "GLIMPSE_Cygnus_2_arc_pref": pow(10, -3),
-    "GLIMPSE_Cygnus_2_arc_flux_unit": True,
-
-    "MIPSGAL_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/MIPSGAL_2_arc.fits",
-    "MIPSGAL_2_arc_flux": ["fnu_3_6", "fnu_4_5", "fnu_5_8", "fnu_8_0", "fnu_24"],
-    "MIPSGAL_2_arc_err": ["sigma_fnu_3_6", "sigma_fnu_4_5", "sigma_fnu_5_8", "sigma_fnu_8_0", "sigma_fnu_24"],
+    "MIPSGAL_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/MIPSGAL_2_arc.fits",
+    "MIPSGAL_2_arc_flux": ["3_6", "4_5", "5_8", "8_0", "24"],
+    "MIPSGAL_2_arc_err": ["no_error", "no_error", "no_error", "no_error", "no_error"],
     "MIPSGAL_2_arc_flag": [],
     "MIPSGAL_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
-    "MIPSGAL_2_arc_pref": pow(10, -3),
-    "MIPSGAL_2_arc_flux_unit": True,
+    "MIPSGAL_2_arc_pref": 1,
+    "MIPSGAL_2_arc_flux_unit": False,
 
-    "Taurus_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/Taurus_2_arc.fits",
-    "Taurus_2_arc_flux": ["i1_02px_flx", "i2_02px_flx", "i3_02px_flx", "i4_02px_flx", "m1flux", "m2flux"],
-    "Taurus_2_arc_err": ["i1_02px_err", "i2_02px_err", "i3_02px_err", "i4_02px_err", "m1fluxerr", "m2fluxerr"],
-    "Taurus_2_arc_flag": [],
-    "Taurus_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
-    "Taurus_2_arc_pref": pow(10, -6),
-    "Taurus_2_arc_flux_unit": True,
-
-    "YSO_GGD_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/YSO_GGD_2_arc.fits",
-    "YSO_GGD_2_arc_flux": ["c3_6mag", "c4_5mag", "c5_8mag", "c8_0mag", "c24mag"],
-    "YSO_GGD_2_arc_err": ["c3_6err", "c4_5err", "c5_8err", "c8_0err", "c24err"],
-    "YSO_GGD_2_arc_flag": ["c3_6lim", "c4_5lim", "c5_8lim", "c8_0lim", "c24lim"],
-    "YSO_GGD_2_arc_wave": [irac1, irac2, irac3, irac4, mips1],
-    "YSO_GGD_2_arc_pref": 1,
-    "YSO_GGD_2_arc_flux_unit": False,
-
-    "YSO_L1688_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/YSO_L1688_2_arc.fits",
-    "YSO_L1688_2_arc_flux": ["c3_6mag", "c4_5mag", "c5_8mag", "c8_0mag", "c24mag", "c70mag"],
-    "YSO_L1688_2_arc_err": ["c3_6err", "c4_5err", "c5_8err", "c8_0err", "c24err", "c70err"],
-    "YSO_L1688_2_arc_flag": ["c3_6lim", "c4_5lim", "c5_8lim", "c8_0lim", "c24lim", "c70lim"],
-    "YSO_L1688_2_arc_wave": [irac1, irac2, irac3, irac4, mips1, mips2],
-    "YSO_L1688_2_arc_pref": 1,
-    "YSO_L1688_2_arc_flux_unit": False,
-
-    "PACS_70_5_6_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/PACS_70_5_6_arc.fits",
-    "PACS_70_5_6_arc_flux": ["flux"],
-    "PACS_70_5_6_arc_err": ["snrnoise"],
-    "PACS_70_5_6_arc_flag": [],
-    "PACS_70_5_6_arc_wave": [pacs70],
-    "PACS_70_5_6_arc_pref": pow(10, -3),
-    "PACS_70_5_6_arc_flux_unit": True,
-
-    "PACS_100_6_8_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/PACS_100_6_8_arc.fits",
-    "PACS_100_6_8_arc_flux": ["flux"],
-    "PACS_100_6_8_arc_err": ["snrnoise"],
-    "PACS_100_6_8_arc_flag": [],
-    "PACS_100_6_8_arc_wave": [pacs100],
-    "PACS_100_6_8_arc_pref": pow(10, -3),
-    "PACS_100_6_8_arc_flux_unit": True,
-
-    "twomass_2_arc": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/twomass_2_arc.fits",
-    "twomass_2_arc_flux": ["j_m", "h_m", "k_m"],
-    "twomass_2_arc_err": ["j_msigcom", "h_msigcom", "k_msigcom"],
-    "twomass_2_arc_flag": ["ph_qual"],
+    "twomass_2_arc": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/twomass_2_arc.fits",
+    "twomass_2_arc_flux": ["Jmag", "Hmag", "Kmag"],
+    "twomass_2_arc_err": ["e_Jmag", "e_Hmag", "e_Kmag"],
+    "twomass_2_arc_flag": ["Qfl"],
     "twomass_2_arc_wave": [j_2mass, h_2mass, k_2mass],
     "twomass_2_arc_pref": 1,
     "twomass_2_arc_flux_unit": False,
 
-    "gaia_dr2_edr3": "../../Unige/2021-2022_Master_project/Data/x_matches_lav/gaia_dr2_edr3.fits",
-    "gaia_dr2_edr3_flux": ["phot_g_mean_mag_g2", "phot_bp_mean_mag_g2", "phot_rp_mean_mag_g2",
-                           "phot_g_mean_mag_ge3", "phot_bp_mean_mag_ge3", "phot_rp_mean_mag_ge3"],
-    "gaia_dr2_edr3_err": ["g_mean_mag_err_g2", "bp_mean_mag_err_g2", "rp_mean_mag_err_g2",
-                          "g_mean_mag_err_ge3", "bp_mean_mag_err_ge3", "rp_mean_mag_err_ge3"],
-    "gaia_dr2_edr3_flag": [],
-    "gaia_dr2_edr3_wave": [g_dr2, bp_dr2, rp_dr2,
-                           g_edr3, bp_edr3, rp_edr3],
-    "gaia_dr2_edr3_pref": 1,
-    "gaia_dr2_edr3_flux_unit": False
+    "gaia_edr3": "../../Unige/2021-2022_Master_project/Data/lav/xmatches/gaia_edr3.fits",
+    "gaia_edr3_flux": ["phot_g_mean_mag", "phot_bp_mean_mag", "phot_rp_mean_mag"],
+    "gaia_edr3_err": ["phot_g_mean_mag_error", "phot_bp_mean_mag_error", "phot_rp_mean_mag_error"],
+    "gaia_edr3_flag": [],
+    "gaia_edr3_wave": [g_edr3, bp_edr3, rp_edr3],
+    "gaia_edr3_pref": 1,
+    "gaia_edr3_flux_unit": False
     }
+
+if file_category == "all" or file_category == "lpv":
+    extra_catalogues_dir = extra_catalogues_dir_lpv
+if file_category == "lav":
+    extra_catalogues_dir = extra_catalogues_dir_lav
 
 irsa_catalogues = ["neowiser_p1bs_psd", "allwise_p3as_psd", "allsky_4band_p3as_psd", "fp_psc", "slphotdr4", "dr4_clouds_hrel",
                    "dr4_off_cloud_hrel", "dr4_cores_hrel", "dr4_stars_hrel", "csi2264t1", "cygx_cat", "glimpse_s07",
@@ -889,7 +749,6 @@ dflt_no_vle = -9999  # default value if basically none is expected
 
 # Gaia Table Field names
 
-field_name_distance = 'distance'
 field_name_parallax_g3 = 'parallax_ge3'    # GE3 or G3
 field_name_parallax_error_g3 = 'parallax_error_ge3'
 field_name_ra_g3 = 'ra_ge3'
@@ -918,3 +777,13 @@ field_name_bp_mag_g3 = 'phot_bp_mean_mag_ge3'
 field_name_rp_mag_g3 = 'phot_rp_mean_mag_ge3'
 source_id_g2 = "source_id_g2"
 
+if file_category == "lav":
+    field_name_parallax_g3 = 'parallax_mas'  # GE3 or G3
+    field_name_parallax_error_g3 = 'parallax_error_mas'
+    field_name_ra_g3 = 'ra_deg_gedr3'
+    field_name_dec_g3 = 'dec_deg_gedr3'
+    field_name_pmra_g3 = 'pmra_masperyr'
+    field_name_pmdec_g3 = 'pmdec_masperyr'
+    field_name_g_mag_g3 = 'phot_g_mean_mag'
+    field_name_bp_mag_g3 = 'phot_bp_mean_mag'
+    field_name_rp_mag_g3 = 'phot_rp_mean_mag'

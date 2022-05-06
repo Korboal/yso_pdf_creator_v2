@@ -264,7 +264,7 @@ class Star:
         self.y_viz, self.error_viz, self.separation_arcsec, self.separation_table = \
             clean_sed_points(self.sed_vizier_data_file_path, self.source_id, self.x_matched_tables_obj)
 
-        if np.size(np.where(np.logical_and(cf.ir_excess_start <= self.x_good, self.x_good <= cf.ir_excess_end))) < 2:
+        if np.size(np.unique(np.where(np.logical_and(cf.ir_excess_start <= self.x_good, self.x_good <= cf.ir_excess_end)))) < 2:
             self.enough_ir_points = False
         else:
             self.enough_ir_points = True
@@ -307,14 +307,28 @@ class Star:
                               save_images=False, show_images=False, print_variables=False):
         from sed_linefit_v4_0 import calculate_sed_excess_from_points, calculate_ir_slope, \
             extrapolate_and_integrate_sed_excess, plot_image
-        from tools import save_in_txt_topcat, identify_yso_class
+        from tools import save_in_txt_topcat, identify_yso_class, take_within_x_boundaries
         if not self.sed_points_prepared:
             self.prepare_sed_points()
 
         if len(fits_to_do) < 7:  # Checks if fits_to_do is not long enough. If not, just makes it so other plots are not done
             fits_to_do += "0000000000"
 
-        param_to_save = [self.source_id, str(self.enough_ir_points)]
+        x_slope25, _, __ = take_within_x_boundaries(self.x_good,
+                                 self.y_good,
+                                 self.error_good,
+                                 cf.ir_slope_start,
+                                 cf.ir_slope_end, 0)
+        mir_points_25 = np.size(np.unique(x_slope25))
+
+        x_slope20, _, __ = take_within_x_boundaries(self.x_good,
+                                                    self.y_good,
+                                                    self.error_good,
+                                                    cf.ir_slope_start,
+                                                    cf.ir_slope_end2, 0)
+        mir_points_20 = np.size(np.unique(x_slope20))
+
+        param_to_save = [self.source_id, mir_points_25, mir_points_20, str(self.enough_ir_points)]
 
         if fits_to_do[0] == "1":
             self.fit_sed_linear_fit()

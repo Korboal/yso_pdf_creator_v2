@@ -16,7 +16,7 @@ from matplotlib.widgets import Slider, Button
 from copy import deepcopy
 from matplotlib.colors import Normalize
 
-matplotlib.use('macosx')
+#matplotlib.use('macosx')
 
 ls_freq_start = 0.001  # 1000 days
 ls_freq_stop = 0.1  # 10 days
@@ -215,8 +215,8 @@ class LightCurve:
                           f"Fit curves: {round(fit_result['period'], 2)} d; {round(fit_result['period2'], 2)} d",
                           alpha=0.75, draw_function=fit_success)
 
-            prepare_plot(f"Fit of {self.band_name} {self.light_curve_name} double period", "Time [days]",
-                         f"{self.band_name} {self.light_curve_name} band [mag]", True, False)
+            prepare_plot(f"Fit of {self.light_curve_name} {self.band_name} double period", "Time [days]",
+                         f"{self.light_curve_name} {self.band_name}band [mag]", True, False)
 
             if fit_result["period"] > fit_result["period2"]:
                 func1 = {"period": fit_result["period"], "phase": fit_result["phase"]}
@@ -329,8 +329,8 @@ class LightCurve:
             else:
                 draw_empty_graph([0])
 
-            prepare_plot(f"Fit of {self.band_name} {self.light_curve_name}", "Time [days]",
-                         f"{self.band_name} {self.light_curve_name} band [mag]", self.show_image, self.save_image,
+            prepare_plot(f"Fit of {self.light_curve_name} {self.band_name}", "Time [days]",
+                         f"{self.light_curve_name} {self.band_name} band [mag]", self.show_image, self.save_image,
                          image_output_png=image_output_png, image_output_pdf=image_output_pdf, save_pdf=self.save_pdfs)
 
     def draw_periodogram(self, image_output_png=None, image_output_pdf=None, second_fit_periods=None,

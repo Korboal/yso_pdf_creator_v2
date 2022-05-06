@@ -17,7 +17,9 @@ def check_if_data_contains_id(data, source_id: str) -> bool:
     :param source_id: ID of the object
     :return: True/False whether object is in the table
     """
-    return source_id in (data.field('source_id').astype(str))
+    # 2022.05.03 updated the function
+    return np.int64(source_id) in data.field('source_id')
+    #return source_id in (data.field('source_id').astype(str))
 
 
 def check_if_not_nan_or_zero(value: float) -> bool:
@@ -449,7 +451,10 @@ def create_directory(directory_path: str):
     :param directory_path: The path to directory, ending with a "/"
     """
     if not os.path.exists(directory_path):
-        os.mkdir(directory_path)
+        try:
+            os.mkdir(directory_path)
+        except FileNotFoundError:
+            os.makedirs(directory_path)
 
 
 def create_all_directories():

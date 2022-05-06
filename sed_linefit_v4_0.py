@@ -377,10 +377,11 @@ def clean_sed_points(vot_table_path: str, object_id: str, x_matched_tables: XMat
         table = x_matched_tables.table_names[i]
         vot_table_data = x_matched_tables.all_table_data[i]
         #vot_table_data, _ = tools.load_fits_table(extra_catalogues_dict[table])
-        if tools.check_if_data_contains_id(vot_table_data, object_id):  # If table contains the object_id, i.e. star
+        location_index = find_index_with_id(vot_table_data, object_id)
+        if location_index is not False:  # If table contains the object_id, i.e. star
             separation_table.append(table[:-6].replace("_", " "))  # Separation table takes in name of the table minus its xmatch size
             separation_arcsec.append(get_one_var_from_fields(
-                vot_table_data, find_index_with_id(vot_table_data, object_id), "Separation", float))
+                vot_table_data, location_index, "Separation", float))
             names_flux = extra_catalogues_dict[table + flux_name]
             names_error = extra_catalogues_dict[table + flux_err_name]
             names_flag = extra_catalogues_dict[table + flag_name]
@@ -389,6 +390,7 @@ def clean_sed_points(vot_table_path: str, object_id: str, x_matched_tables: XMat
             flux_unit = extra_catalogues_dict[table + flux_unit_name]
             error_good, error_upper, x_good, x_upper, y_good, y_upper = get_sed_data_points_from_table(vot_table_data,
                                                                                                        object_id,
+                                                                                                       location_index,
                                                                                                        names_error,
                                                                                                        names_flag,
                                                                                                        names_flux,
@@ -419,8 +421,9 @@ def clean_sed_points(vot_table_path: str, object_id: str, x_matched_tables: XMat
            separation_table
 
 
-def get_sed_data_points_from_table(vot_table_data, object_id: str, names_error: list, names_flag: list,
-                                   names_flux: list, flux_unit: bool, prefactor: float, wavelengths: list,
+def get_sed_data_points_from_table(vot_table_data, object_id: str, location_index: int, names_error: list,
+                                   names_flag: list, names_flux: list, flux_unit: bool, prefactor: float,
+                                   wavelengths: list,
                                    x_good: np.ndarray, y_good: np.ndarray, error_good: np.ndarray, x_upper: np.ndarray,
                                    y_upper: np.ndarray, error_upper: np.ndarray) -> Tuple[
                                    np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -429,6 +432,7 @@ def get_sed_data_points_from_table(vot_table_data, object_id: str, names_error: 
 
     :param vot_table_data: FITS data from specific .vot table
     :param object_id: object ID
+    :param location_index: where the source ID is located in FITS data
     :param names_error: Names of the errors field in the catalogue
     :param names_flag: Names of the flags field in the catalogue
     :param names_flux: Names of the flux field in the catalogue
@@ -444,8 +448,8 @@ def get_sed_data_points_from_table(vot_table_data, object_id: str, names_error: 
     :return: 6 1D appended arrays of original x,y,error data in the following order: error_good, error_upper, x_good, x_upper, y_good, y_upper
     """
 
-    flux, error, flag = get_flux_with_error_and_flag(vot_table_data, names_flux, names_error, names_flag, object_id,
-                                                     wavelengths, prefactor, flux_unit)
+    flux, error, flag = get_flux_with_error_and_flag(vot_table_data, location_index, names_flux, names_error,
+                                                     names_flag, object_id, wavelengths, prefactor, flux_unit)
     x_good_new, y_good_new, err_good_new, x_up_new, y_up_new, err_up_new = sort_flux(wavelengths, flux, error, flag)
 
     if len(x_good_new) != 0:
@@ -460,12 +464,14 @@ def get_sed_data_points_from_table(vot_table_data, object_id: str, names_error: 
     return error_good, error_upper, x_good, x_upper, y_good, y_upper
 
 
-def get_flux_with_error_and_flag(data, names_flux: list, names_error: list, names_flag: list, source_id: str,
+def get_flux_with_error_and_flag(data, location_index: int, names_flux: list, names_error: list, names_flag: list,
+                                 source_id: str,
                                  wavelengths: list, freq_prefactor: float, flux_unit: bool) -> Tuple[list, list, list]:
     """
     Takes data and loads it from data, removing data with bad flags and giving appropriate flags/error to each. Magnitude is converted to flux
 
     :param data: FITS data from specific .vot table
+    :param location_index: where source id is in the data
     :param names_flux: Names of the flux field in the catalogue
     :param names_error: Names of the errors field in the catalogue
     :param names_flag: Names of the flags field in the catalogue
@@ -475,7 +481,7 @@ def get_flux_with_error_and_flag(data, names_flux: list, names_error: list, name
     :param flux_unit: True if flux, False if magnitude
     :return: Three arrays: flux (W/m^2), errors (W/m^2), flags
     """
-    index = find_index_with_id(data, str(source_id))
+    index = location_index
     fluxes = []
     errors = []
     flags = []
@@ -921,6 +927,7 @@ def extrapolate_and_integrate_sed_excess(star_obj: Star, print_variables: bool, 
             pass
         else:
             print(f"{star_obj.source_id} Too high -3 slope, reducing by {dy}")
+            tools.save_in_txt_topcat([star_obj.source_id, dy], "output_textfiles/too_high_lav.txt")
             const = const - dy
             #star_obj.sed_linefit_rayleigh_jeans_const = const
             func_rayleigh_jeans_log_space = lambda xx: model_function_rayleigh_jeans_in_log_space(xx, const)

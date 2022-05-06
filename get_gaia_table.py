@@ -4,17 +4,30 @@ import config_file as cf
 from typing import Union, Tuple, Callable, Any, List
 
 
-def find_index_with_id(data, source_id: str) -> int:
+def find_index_with_id(data, source_id: str) -> Union[int, bool]:
     """
     Find the index where id is located in data
 
     :param data: Gaia FITS table from .vots
     :param source_id: source_id
+    :return index where id is located or False if index is not in there
+    """
+    # 2022.05.03 updated the function
+    index_array = np.where(data.field('source_id') == np.int64(source_id))[0]
+    if np.size(index_array) == 0:
+        return False
+    else:
+        return index_array[0]
+    """try:
+        return np.where(data.field('source_id') == np.int64(source_id))[0][0]
+    except IndexError:
+        return False"""
+
     """
     try:
         return np.where(data.field('source_id').astype(str) == str(source_id))[0][0]
     except:
-        return np.where(data.field('source_id').astype(str) == str(source_id))[0]
+        return np.where(data.field('source_id').astype(str) == str(source_id))[0]"""
 
 
 def get_star_info(data, source_id: str) -> dict:
@@ -25,7 +38,7 @@ def get_star_info(data, source_id: str) -> dict:
     :param source_id: ID of the object
     :return: Dictionary with elements as fields from that star. To reference use: VARIABLE_NAME['FIELD_NAME']
     """
-    index = find_index_with_id(data, str(source_id))
+    index = find_index_with_id(data, source_id)
 
     source_id_g2 = get_field_from_data(data, index, cf.source_id_g2, convert_to_float=False)
     par_ge3 = get_field_from_data(data, index, cf.field_name_parallax_g3)   # should be in mas units

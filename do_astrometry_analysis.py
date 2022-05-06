@@ -14,34 +14,34 @@ def do_nebula_pm_analysis(filename_stars_with_nebulae, nebulae_data):
     stars_with_nebulae_data = tools.load_data(filename_stars_with_nebulae)
     stars_with_nebulae = stars_with_nebulae_data[:, 6]
 
+    list_star_membership_data = tools.listdir("mol_clouds/stars_for_pm_nebula/")
+
+    for i in range(np.size(list_star_membership_data)):
+        list_star_membership_data[i] = list_star_membership_data[i][6:][:-4].lower()
+
+    #nebulae_star_membership_data = tools.load_data("mol_clouds/stars_for_pm_nebula/stars_taurus.txt")
+
     unique_nebulae = np.unique(stars_with_nebulae)
 
+    print(f"Nebulae to go through {np.size(unique_nebulae)}")
+
     for nebula_name in unique_nebulae:
+        print(nebula_name)
         arg_with_neb = np.where(stars_with_nebulae == nebula_name)
-        if nebula_name in pm_nebulae_data[:, 0]:
+        """if nebula_name in pm_nebulae_data[:, 0]:
             #print(f"HELLO we found your nebula {nebula_name}")
             index_pm_to_use = np.where(pm_nebulae_data[:, 0] == nebula_name)[0][0]
             nebula_pmra = float(pm_nebulae_data[:, 1][index_pm_to_use])
-            nebula_pmdec = float(pm_nebulae_data[:, 2][index_pm_to_use])
-        else:
-            if np.size(arg_with_neb) >= min_stars_to_analyse_nebula:
-                pmra_neb_all_stars = stars_with_nebulae_data[arg_with_neb, 3][0].astype(float)
-                pmdec_neb_all_stars = stars_with_nebulae_data[arg_with_neb, 4][0].astype(float)
+            nebula_pmdec = float(pm_nebulae_data[:, 2][index_pm_to_use])"""
+        if True:
+            nebula_name_temp = nebula_name.lower()
+            if nebula_name_temp in list_star_membership_data:
+                nebulae_star_membership_data = tools.load_data(f"mol_clouds/stars_for_pm_nebula/stars_{nebula_name}.txt")
+                pmra_neb_all_stars = nebulae_star_membership_data[:, 9].astype(float)
+                pmdec_neb_all_stars = nebulae_star_membership_data[:, 11].astype(float)
 
-                avg_pm_length = np.mean(np.sqrt(np.square(pmra_neb_all_stars) + np.square(pmdec_neb_all_stars)))
-
-                pmra_neb_avg = np.mean(pmra_neb_all_stars)
-                pmdec_neb_avg = np.mean(pmdec_neb_all_stars)
-
-                pm_neb_length = np.sqrt(np.square(pmra_neb_avg) + np.square(pmdec_neb_avg))
-
-                pm_length_ratio = max(avg_pm_length, pm_neb_length) / min(avg_pm_length, pm_neb_length)
-
-                if pm_length_ratio < max_ratio_of_pm_to_be_ok:
-                    nebula_pmra = pmra_neb_avg
-                    nebula_pmdec = pmdec_neb_avg
-                else:
-                    nebula_pmra, nebula_pmdec = 0, 0
+                nebula_pmra = np.median(pmra_neb_all_stars)
+                nebula_pmdec = np.median(pmdec_neb_all_stars)
             else:
                 nebula_pmra, nebula_pmdec = 0, 0
 
