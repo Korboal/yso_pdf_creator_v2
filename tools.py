@@ -527,3 +527,19 @@ def linear_best_fit(x: list, y: list) -> Tuple[float, float]:
     c = ybar - m * xbar
 
     return c, m
+
+
+def load_several_txt_files(folder_from_where_to_load):
+    file_names = get_all_file_names_in_a_folder(folder_from_where_to_load)
+
+    data_total = None
+    for file in file_names:
+        data_one = load_data(folder_from_where_to_load + file)
+        if data_one.ndim == 1:
+            data_one = np.array([data_one])
+        if data_total is None:
+            data_total = data_one
+        else:
+            data_total = np.append(data_total, data_one, axis=0)
+
+    return data_total

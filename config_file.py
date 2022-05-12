@@ -2,10 +2,10 @@ import datetime
 import matplotlib
 import numpy as np
 
-file_category = "lav"               # Purely for naming purposes of the outputs. Useful if need different samples
+file_category = "all"               # Purely for naming purposes of the outputs. Useful if need different samples
 gaia_table_version = 46             # For input Gaia table naming. Can in theory be ignored, check the usage to see where used
 save_pdfs = False                   # If want to save images as PDFs, increases the run time quite a bit
-debug_mode = True                   # Debug mode: show parameters and images, do NOT save anything
+debug_mode = False                   # Debug mode: show parameters and images, do NOT save anything
 save_images_if_not_debug = False    # If want to save images, while not debugging
 use_vizier_data = False             # If want to also plot data from Vizier
 
@@ -15,12 +15,12 @@ do_multiband_periodogram = False
 
 neowise_lightcurve_fit = False
 
-sed_line_fit = True        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
+sed_line_fit = False        # Do SED linear fits (i.e. IR slopes); fast, nothing complex
 do_pdf_creation = False     # Make PDFs for each star with their information and fits
 do_bb_fit = False           # Do fits using my own blackbody fits (bad)
 save_bb_variables = False   # Save variables for blackbody fit
 do_sedfitter = False        # Use SEDFitter to fit star's models. Only on fast PC
-find_nebula = False
+find_nebula = True
 
 do_irsa_astroquery = False
 do_xmm_astroquery = False
@@ -28,7 +28,7 @@ do_vvvdr4_astroquery = False
 recalculate_sedfitter_param_ranges = False
 recalculate_folder = "sedfitter/fitinfo/spusmi/" #"sedfitter/fitinfo/spsi/"
 
-sed_fits_to_do = "1111111"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not.
+sed_fits_to_do = "0001000"  # Which fits to do in sed_line_fit. 1 if want to do, 0 if not. 0001000
 #sed_fits_to_do = "0000001"
 
 remove_ztf_peak_periodogram_days = []   # 1
@@ -42,7 +42,7 @@ remove_ztf_peak_periodogram_days = []   # 1
 # 6th bit: integral of the excess
 # 7th bit: plot image
 
-ids_to_calculate = np.array(["5615280482355060352"]).astype(str)
+ids_to_calculate = np.array([]).astype(str)
 
 detrend = False
 do_fit_with_constant_period = False
@@ -268,7 +268,7 @@ output_sed_temp_fits_txt = f"{textfiles_output_folder}{date_time_to_use}__sed_te
 
 output_sed_temp_pic = f"output_pictures/{file_category}/sed_temps/"
 
-foundation_txt = "#source_id126\tpoints_slope_25\tpoints_slope_20\tmir_exists"
+foundation_txt = "#source_id126\tpoints_slope_25\tpoints_slope_20\tmir_exists\tis_sed_okay"
 all_ratio_txt = "\tlast_wv\tlast_ratio_err\tlast_ratio\tavg_diff\tavg_ratio\t" \
                         "biggest_ratio_err\tbiggest_ratio_wl\tbiggest_ratio"
 mir_ratio_txt = "\tlast_wv_mir\tlast_ratio_err_mir\tlast_ratio_mir\tavg_diff_mir\tavg_ratio_mir\t" \

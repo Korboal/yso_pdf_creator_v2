@@ -460,6 +460,16 @@ class MyTestCase(unittest.TestCase):
         self.assertAlmostEqual(-3, res[1])
         self.assertAlmostEqual(1, res[0])
 
+    def test_check_if_sed_is_okay(self):
+        x = [1,2,3,4,5,6,7,8]
+        error = [0,0,0,0,0,0,0,0]
+        self.assertEqual(True, sed_linefit_v4_0.check_if_sed_is_okay(x, [1,2,3,2,1,0,-1,-2], error))
+        self.assertEqual(True, sed_linefit_v4_0.check_if_sed_is_okay(x, [1, 2, 3, 2, 1, 0, -1, 0], error))
+        self.assertEqual(True, sed_linefit_v4_0.check_if_sed_is_okay(x, [1, 2, 3, 2, 1, 0, 1, 2], error))
+        self.assertEqual(False, sed_linefit_v4_0.check_if_sed_is_okay(x, [1, -3, 3, 2, 1, 0, 1, 2], error))
+        self.assertEqual(False, sed_linefit_v4_0.check_if_sed_is_okay(x,[1, -3, 3, 2, 1, 0, 1, 2], error))
+        self.assertEqual(False, sed_linefit_v4_0.check_if_sed_is_okay(x, [1, -3, -4, -5, 1, 0, 1, 2], error))
+
 
 if __name__ == '__main__':
     unittest.main()

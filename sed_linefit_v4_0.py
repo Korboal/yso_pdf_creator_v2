@@ -1332,3 +1332,76 @@ def plot_image(star_obj: Star, image_showing: bool, save_image: bool):
             plt.show()
 
         plt.close('all')
+
+
+def check_if_sed_is_okay(x_og, y_og, error_og):
+    """
+    Tries to see whether SED is okay. Expects BB + potential excess. If that is true, then BB is concave down
+    (neg 2nd derivative) into concave up (positive 2nd der). If that's not the case, then returns False
+    :param x_og: x values for wavelength
+    :param y_og: y values flux
+    :param error_og: errors exist, but not used
+    :return: True if SED is concave down then optionally up, False if not
+    """
+
+    x, y, error = prepare_data_for_interpolate(x_og, y_og, error_og)
+
+    sorted_indices = x.argsort()  # Sorts indices to be in ascending order
+    x = x[sorted_indices]
+    y = y[sorted_indices]
+
+    dy = np.diff(y, 1)
+    dx = np.diff(x, 1)
+    yfirst = dy / dx
+
+    #xfirst = 0.5 * (x[:-1] + x[1:])
+
+    #dyfirst = np.diff(yfirst, 1)
+    #dxfirst = np.diff(xfirst, 1)
+    #ysecond = dyfirst / dxfirst     # find second derivative
+
+    ind_non_zero = np.where(yfirst != 0)[0]       # remove where second derivative is 0
+    if np.size(ind_non_zero) > 0:
+        yfirst = yfirst[ind_non_zero]
+    else:
+        return False    # if all second derivatives are 0 return False
+
+    if np.size(yfirst) == 0:
+        return False
+
+    #if ysecond[0] > 0:  # if SED is initially concave up, then SED is already bad, return False
+    #    return False
+
+    yfirst_first_neg_index = np.where(yfirst < 0)[0]      # find where the 1st derivative becomes negative
+    if np.size(yfirst_first_neg_index) == 0:   # if always positive, then just return True (strong excess)
+        return True
+
+    yfirst_rest = yfirst[yfirst_first_neg_index[0] + 1:]  # first negative slope
+    yfirst_first_pos_index = np.where(yfirst_rest > 0)[0]
+
+    if np.size(yfirst_first_pos_index) == 0:
+        return True
+
+    yfirst_rest_2 = yfirst_rest[yfirst_first_pos_index[0] + 1:]  # first positive after negative slope
+
+    if np.size(np.where(yfirst_rest_2 < 0)[0]) > 0:
+        return False    # if becomes negative concave after positive, return False
+    else:
+        return True
+
+    """
+    dy = y[1:] - y[:-1]
+    dx = x[1:] - x[:-1]
+    m = dy / dx
+
+    m2 = np.where(m < 0, m, 1)
+    m2 = np.where(m2 >= 0, m2, -1)
+
+    dm = m2[1:] * m2[:-1]
+
+    dm_first_neg_index = np.where(dm < 0)[0][0]
+    dm_rest = dm[dm_first_neg_index+1:]
+    if np.size(np.where(dm_rest < 0)[0]) > 0:
+        return False
+    else:
+        return True"""

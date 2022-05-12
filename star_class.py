@@ -306,7 +306,7 @@ class Star:
     def sed_line_fit_and_plot(self, fits_to_do: str, save_variables=False,
                               save_images=False, show_images=False, print_variables=False):
         from sed_linefit_v4_0 import calculate_sed_excess_from_points, calculate_ir_slope, \
-            extrapolate_and_integrate_sed_excess, plot_image
+            extrapolate_and_integrate_sed_excess, plot_image, check_if_sed_is_okay
         from tools import save_in_txt_topcat, identify_yso_class, take_within_x_boundaries
         if not self.sed_points_prepared:
             self.prepare_sed_points()
@@ -314,7 +314,7 @@ class Star:
         if len(fits_to_do) < 7:  # Checks if fits_to_do is not long enough. If not, just makes it so other plots are not done
             fits_to_do += "0000000000"
 
-        x_slope25, _, __ = take_within_x_boundaries(self.x_good,
+        x_slope25, y_slope_25, err_slope_25 = take_within_x_boundaries(self.x_good,
                                  self.y_good,
                                  self.error_good,
                                  cf.ir_slope_start,
@@ -328,7 +328,15 @@ class Star:
                                                     cf.ir_slope_end2, 0)
         mir_points_20 = np.size(np.unique(x_slope20))
 
-        param_to_save = [self.source_id, mir_points_25, mir_points_20, str(self.enough_ir_points)]
+        x_10, y_10, err_10 = take_within_x_boundaries(self.x_good,
+                                                    self.y_good,
+                                                    self.error_good,
+                                                    0,
+                                                    10 * pow(10, -6), 0)
+
+        is_sed_okay = check_if_sed_is_okay(x_10, y_10, err_10)
+
+        param_to_save = [self.source_id, mir_points_25, mir_points_20, str(self.enough_ir_points), str(is_sed_okay)]
 
         if fits_to_do[0] == "1":
             self.fit_sed_linear_fit()

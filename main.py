@@ -63,17 +63,10 @@ def main():
         tools.save_in_txt([cf.ztf_lightcurve_txt_to_save], cf.output_ztf_lightcurves_period)
 
     if cf.find_nebula:
-        nebulae_files = tools.get_all_file_names_in_a_folder(cf.input_folder_nebulae)
+        nebulae_data = tools.load_several_txt_files(cf.input_folder_nebulae)
         tools.save_in_txt_topcat(["# source_id_\tra\tdec\tpmra\tpmdec\tclosest_nebula\tnebula\tdist_to_closest_nebula\tconfidence"], cf.output_textfile_nebulae)
-        tools.save_in_txt_topcat(["# nebula_name\tra_neb\tdec_neb\tdist_to_neb_pc\tsize_neb_pc\tpmra_neb\tpmdec_neb\tnumber_of_stars"], cf.output_textfile_nebulae_only_pm)
+        tools.save_in_txt_topcat(["# nebula_name\tra_neb\tdec_neb\tdist_to_neb_pc\tsize_neb_pc\tpmra_neb\tpmdec_neb\tpmra_neb_std\tpmdec_neb_std\tnumber_of_stars"], cf.output_textfile_nebulae_only_pm)
         tools.save_in_txt_topcat(["# source_id_\tra\tdec\tpmra\tpmdec\tclosest_nebula\tnebula\tdist_to_closest_nebula\tconfidence\tis_part_of_nebula"], cf.output_textfile_nebulae_star_pm)
-        nebulae_data = None
-        for file in nebulae_files:
-            nebula_data = tools.load_data(cf.input_folder_nebulae + file)
-            if nebulae_data is None:
-                nebulae_data = nebula_data
-            else:
-                nebulae_data = np.append(nebulae_data, nebula_data, axis=0)
 
         #nebula_data_visual = tools.load_data("mol_clouds/og_or_old/mol_clouds_full_visual_sizes.txt")
 
