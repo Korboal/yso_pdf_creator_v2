@@ -16,7 +16,7 @@ from matplotlib.widgets import Slider, Button
 from copy import deepcopy
 from matplotlib.colors import Normalize
 
-#matplotlib.use('macosx')
+matplotlib.use('macosx')
 
 ls_freq_start = 0.001  # 1000 days
 ls_freq_stop = 0.1  # 10 days

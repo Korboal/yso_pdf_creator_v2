@@ -319,14 +319,14 @@ class Star:
                                  self.error_good,
                                  cf.ir_slope_start,
                                  cf.ir_slope_end, 0)
-        mir_points_25 = np.size(np.unique(x_slope25))
+        #mir_points_25 = np.size(np.unique(x_slope25))
 
         x_slope20, _, __ = take_within_x_boundaries(self.x_good,
                                                     self.y_good,
                                                     self.error_good,
                                                     cf.ir_slope_start,
                                                     cf.ir_slope_end2, 0)
-        mir_points_20 = np.size(np.unique(x_slope20))
+        #mir_points_20 = np.size(np.unique(x_slope20))
 
         x_10, y_10, err_10 = take_within_x_boundaries(self.x_good,
                                                     self.y_good,
