@@ -1,6 +1,8 @@
 from reportlab.pdfgen import canvas
 import numpy as np
 import matplotlib.pyplot as plt
+
+import config_file as cf
 from star_class import Star
 from config_file import temp_path
 from typing import Union
@@ -37,14 +39,14 @@ def write_gaia_info_for_one_star(canvas_to_use: canvas.Canvas, star_obj: Star):
     dist_error_temp = star_obj.parallax_error_ge3 / star_obj.parallax_ge3 * 100
     dist_txt = f"{format_decim(star_obj.distance_ge3, 0)} pc ± {int(format_decim(dist_error_temp, 0))} %"
 
-    if star_obj.gaia_g_light_curve is None:
-        star_obj.lightcurve_fit_and_plot(False, False, False, False)
+    #if star_obj.gaia_g_light_curve is None:
+    #    star_obj.lightcurve_fit_and_plot(False, False, False, False)
     if star_obj.ir_slope25 is None:
         star_obj.sed_line_fit_and_plot("0001000")
     if star_obj.ir_slope20 is None:
         star_obj.sed_line_fit_and_plot("0000100")
-    if star_obj.ztf_g_light_curve is None or star_obj.ztf_r_light_curve is None:
-        star_obj.analyse_ztf_lightcurves(False, False, False, False, False)
+    #if star_obj.ztf_g_light_curve is None or star_obj.ztf_r_light_curve is None:
+    #   star_obj.analyse_ztf_lightcurves(False, False, False, False, False)
 
     strings_to_write = np.array([f"GEDR3: {star_obj.source_id}",
                                  f"SIMBAD: {star_obj.name_simbad}",
@@ -101,12 +103,12 @@ def draw_hr_diagram_with_star(data, star_obj: Star, save_location: str):
     :param save_location: Where to save HR diagram temporarily
     """
 
-    g_mag = data.field('phot_g_mean_mag_ge3').astype(float)
-    par = data.field('parallax_ge3').astype(float)
+    g_mag = data.field(cf.field_name_g_mag_g3).astype(float)
+    par = data.field(cf.field_name_parallax_g3).astype(float)
     abs_g = g_mag + 5 - 5 * np.log10(1000 / abs(par))
 
-    bp = data.field('phot_bp_mean_mag_ge3').astype(float)
-    rp = data.field('phot_rp_mean_mag_ge3').astype(float)
+    bp = data.field(cf.field_name_bp_mag_g3).astype(float)
+    rp = data.field(cf.field_name_rp_mag_g3).astype(float)
 
     plt.scatter(bp - rp, abs_g, s=5, color='grey')
     plt.xlabel("BP-RP [mag]")
@@ -149,51 +151,58 @@ def draw_pdf_graphs(canvas_to_use: canvas.Canvas, star_obj: Star, data_all_gaia_
     hr_dia_dir = temp_path + "/hr_" + str(star_obj.source_id) + ".png"
     draw_hr_diagram_with_star(data_all_gaia_stars, star_obj, hr_dia_dir)
 
-    left_images_directory_page_1 = [hr_dia_dir, star_obj.raw_data_gaia_bp_band_output_png,
-                                    star_obj.raw_data_gaia_g_band_output_png]
-    right_images_directory_page_1 = [star_obj.sed_fit_directory_png, star_obj.raw_data_gaia_rp_band_output_png,
-                                     star_obj.fitted_curve_gaia_g_output_png]
-    draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_1,
-                          left_images_directory_page_1, right_images_directory_page_1)
-    canvas_to_use.showPage()
+    if cf.file_category == "lpv" or cf.file_category == "all":
+        left_images_directory_page_1 = [hr_dia_dir, star_obj.raw_data_gaia_bp_band_output_png,
+                                        star_obj.raw_data_gaia_g_band_output_png]
+        right_images_directory_page_1 = [star_obj.sed_fit_directory_png, star_obj.raw_data_gaia_rp_band_output_png,
+                                         star_obj.fitted_curve_gaia_g_output_png]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_1,
+                              left_images_directory_page_1, right_images_directory_page_1)
+        canvas_to_use.showPage()
 
-    left_images_directory_page_2 = [star_obj.periodogram_gaia_g_png_directory, star_obj.folded_light_curve_gaia_bp_with_gaia_g_output_png,
-                                    star_obj.ztf_output_pictures_raw, star_obj.ztf_output_pictures_folded_g_with_gaia_g_fit]
-    right_images_directory_page_2 = [star_obj.folded_light_curve_gaia_g_output_png, star_obj.folded_light_curve_gaia_rp_with_gaia_g_output_png,
-                                     star_obj.ztf_output_pictures_folded, star_obj.ztf_output_pictures_folded_r_with_gaia_g_fit]
-    draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
-                          left_images_directory_page_2, right_images_directory_page_2)
-    canvas_to_use.showPage()
+        left_images_directory_page_2 = [star_obj.periodogram_gaia_g_png_directory, star_obj.folded_light_curve_gaia_bp_with_gaia_g_output_png,
+                                        star_obj.ztf_output_pictures_raw, star_obj.ztf_output_pictures_folded_g_with_gaia_g_fit]
+        right_images_directory_page_2 = [star_obj.folded_light_curve_gaia_g_output_png, star_obj.folded_light_curve_gaia_rp_with_gaia_g_output_png,
+                                         star_obj.ztf_output_pictures_folded, star_obj.ztf_output_pictures_folded_r_with_gaia_g_fit]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
+                              left_images_directory_page_2, right_images_directory_page_2)
+        canvas_to_use.showPage()
 
-    left_images_directory_page_3 = [star_obj.ztf_output_pictures_fit_ztf_g, star_obj.ztf_output_pictures_fit_ztf_r, star_obj.sed_bar_dir_png, None]
-    right_images_directory_page_3 = [star_obj.ztf_output_pictures_folded_ztf_g, star_obj.ztf_output_pictures_folded_ztf_r, None, star_obj.output_gaia_all_bands_raw_data_png]
-    draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
-                          left_images_directory_page_3, right_images_directory_page_3)
-    canvas_to_use.showPage()
+        left_images_directory_page_3 = [star_obj.ztf_output_pictures_fit_ztf_g, star_obj.ztf_output_pictures_fit_ztf_r, star_obj.sed_bar_dir_png, None]
+        right_images_directory_page_3 = [star_obj.ztf_output_pictures_folded_ztf_g, star_obj.ztf_output_pictures_folded_ztf_r, None, star_obj.output_gaia_all_bands_raw_data_png]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
+                              left_images_directory_page_3, right_images_directory_page_3)
+        canvas_to_use.showPage()
 
-    left_images_directory_page_4 = [star_obj.ztf_output_pictures_periodogram_ztf_g_png, star_obj.ztf_output_pictures_folded_g_with_ztf_r_fit,
-                                    star_obj.output_frequency_periodogram_gaia_g_png, star_obj.output_frequency_periodogram_ztf_r_png]
-    right_images_directory_page_4 = [star_obj.ztf_output_pictures_periodogram_ztf_r_png, star_obj.ztf_output_pictures_folded_r_with_ztf_g_fit,
-                                     star_obj.output_frequency_periodogram_ztf_g_png, None]
-    draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
-                          left_images_directory_page_4, right_images_directory_page_4)
-    """canvas_to_use.showPage()
-
-    left_images_directory_page_5 = [star_obj.output_multiband_frequency_periodogram_gaia_png, star_obj.output_multiband_gaia_fit_gaia_bp_png,
-                                    star_obj.output_multiband_frequency_periodogram_ztf_png, star_obj.output_multiband_ztf_fit_ztf_r_png]
-    right_images_directory_page_5 = [star_obj.output_multiband_gaia_fit_gaia_g_png, star_obj.output_multiband_gaia_fit_gaia_rp_png,
-                                     star_obj.output_multiband_ztf_fit_ztf_g_png, None]
-    draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
-                          left_images_directory_page_5, right_images_directory_page_5)
-    canvas_to_use.showPage()
-
-    left_images_directory_page_6 = [star_obj.output_multiband_frequency_periodogram_all_png, star_obj.output_multiband_all_fit_gaia_bp_png,
-                                    star_obj.output_multiband_all_fit_ztf_g_png]
-    right_images_directory_page_6 = [star_obj.output_multiband_all_fit_gaia_g_png, star_obj.output_multiband_all_fit_gaia_rp_png,
-                                     star_obj.output_multiband_all_fit_ztf_r_png]
-    draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
-                          left_images_directory_page_6, right_images_directory_page_6)
-    canvas_to_use.showPage()"""
+        left_images_directory_page_4 = [star_obj.ztf_output_pictures_periodogram_ztf_g_png, star_obj.ztf_output_pictures_folded_g_with_ztf_r_fit,
+                                        star_obj.output_frequency_periodogram_gaia_g_png, star_obj.output_frequency_periodogram_ztf_r_png]
+        right_images_directory_page_4 = [star_obj.ztf_output_pictures_periodogram_ztf_r_png, star_obj.ztf_output_pictures_folded_r_with_ztf_g_fit,
+                                         star_obj.output_frequency_periodogram_ztf_g_png, None]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
+                              left_images_directory_page_4, right_images_directory_page_4)
+        """canvas_to_use.showPage()
+    
+        left_images_directory_page_5 = [star_obj.output_multiband_frequency_periodogram_gaia_png, star_obj.output_multiband_gaia_fit_gaia_bp_png,
+                                        star_obj.output_multiband_frequency_periodogram_ztf_png, star_obj.output_multiband_ztf_fit_ztf_r_png]
+        right_images_directory_page_5 = [star_obj.output_multiband_gaia_fit_gaia_g_png, star_obj.output_multiband_gaia_fit_gaia_rp_png,
+                                         star_obj.output_multiband_ztf_fit_ztf_g_png, None]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
+                              left_images_directory_page_5, right_images_directory_page_5)
+        canvas_to_use.showPage()
+    
+        left_images_directory_page_6 = [star_obj.output_multiband_frequency_periodogram_all_png, star_obj.output_multiband_all_fit_gaia_bp_png,
+                                        star_obj.output_multiband_all_fit_ztf_g_png]
+        right_images_directory_page_6 = [star_obj.output_multiband_all_fit_gaia_g_png, star_obj.output_multiband_all_fit_gaia_rp_png,
+                                         star_obj.output_multiband_all_fit_ztf_r_png]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image_page_n,
+                              left_images_directory_page_6, right_images_directory_page_6)
+        canvas_to_use.showPage()"""
+    else:
+        left_images_directory_page_1 = [hr_dia_dir, star_obj.sed_bar_dir_png]
+        right_images_directory_page_1 = [star_obj.sed_fit_directory_png, None]
+        draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image,
+                              init_y_image_page_1,
+                              left_images_directory_page_1, right_images_directory_page_1)
 
 
 def draw_graphs_on_canvas(canvas_to_use, image_height, image_spacing, image_width, init_x_image, init_y_image,

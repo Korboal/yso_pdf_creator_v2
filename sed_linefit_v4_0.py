@@ -1049,7 +1049,7 @@ def extrapolate_and_integrate_sed_excess(star_obj: Star, print_variables: bool, 
         if sed_integ_flux_lin_space[0] > cf.dflt_no_vle:   # If extrapolation is done, also plot those
             wavelengths_array = np.linspace(extrapolation_lower_limit, extrapolation_upper_limit, 10 ** 2)
             ax.plot(wavelengths_array * pow(10, 6), func_sed_lin_flux_space(wavelengths_array), label="SED fit",
-                    color="purple")
+                    color="black")
 
             line_min_y = min(np.min(star_obj.y_good), np.min(model_fit_v2))
             line_max_y = max(np.max(star_obj.y_good), np.max(model_fit_v2))

@@ -22,6 +22,7 @@ ls_freq_start = 0.001  # 1000 days
 ls_freq_stop = 0.1  # 10 days
 ls_freq_stop = 2  # 0.5 day
 ls_freq_stop = 0.5  # 2 days
+ls_freq_stop = 0.1
 
 # ls_freq_start = 0.5  # 2 days   for very short term variability
 # ls_freq_stop = 100  # 14.4 min  for very short term variability
@@ -687,6 +688,42 @@ class LightCurve:
         sc = plt.scatter(x, self.data_y, c=z, cmap=cm, linewidth=1)
         plt.colorbar(sc, label='Time [days]')
         prepare_plot(f"Folded {self.light_curve_name} {self.band_name}", f"Phase with period {round(self.period_fit, 3)} d", "Band [mag]", True, False, invert_yaxis=True, show_legend=False)
+
+    def calculate_st_dev_residuals(self):
+        if self.period_fit != 0:
+            period_to_fold = abs(self.period_fit)
+
+            new_folded_x = (self.data_t % period_to_fold) / period_to_fold
+            y_values = self.data_y
+
+            # boxcar here maybe?
+
+            time = self.data_t % period_to_fold
+            #x_func = np.linspace(np.min(time), np.max(time), 5000)
+            #x = x_func / period_to_fold
+
+            y_func = self.fit_result["fitfunc"](time)
+
+            y_residuals = y_values - y_func
+
+            return np.std(y_residuals)
+        else:
+            return cf.dflt_no_vle
+
+    def calculate_mean_decile(self):
+        if self.data_length > cf.minimum_data_points_to_fit_light_curve:
+            ten_percentile = np.percentile(self.data_y, 10)
+            ninety_percentile = np.percentile(self.data_y, 90)
+
+            top_values = self.data_y[np.where(self.data_y < ten_percentile)[0]]
+            bottom_values = self.data_y[np.where(self.data_y > ninety_percentile)[0]]
+
+            combined_deciles = np.append(top_values, bottom_values)
+            mean_decile = np.mean(combined_deciles)
+
+            return mean_decile
+        else:
+            return cf.dflt_no_vle
 
 
 class LightCurveGaia(LightCurve):

@@ -53,7 +53,7 @@ def main():
     x_match_obj = XMatchTables(cf.extra_catalogues_dir)     # Get the data from other x-matched catalogues
     x_match_obj.__setstate__()
 
-    if cf.lightcurve_fit_save_variables and cf.lightcurve_fit:  # To prepare saving variables for all fits
+    if cf.lightcurve_fit_save_variables and cf.gaia_lightcurve_fit:  # To prepare saving variables for all fits
         tools.save_in_txt([cf.lightcurve_gaia_txt_to_save], cf.output_fitted_period_text)
     if cf.sed_line_fit_save_variables and cf.sed_line_fit:
         tools.save_in_txt([sed_txt_to_save], cf.output_fitted_param)
@@ -185,7 +185,7 @@ def main():
 
         if not tools.isfile(star_object.pdf_dir) or True:
             #if ids[i] in ids_to_do and not tools.isfile(star_object.pdf_dir):
-            if cf.lightcurve_fit:   # Gaia light curve fit      # cf.lightcurve_fit_save_variables
+            if cf.gaia_lightcurve_fit:   # Gaia light curve fit      # cf.lightcurve_fit_save_variables
                 star_object.lightcurve_fit_and_plot(save_variables=cf.lightcurve_fit_save_variables,
                                                     save_images=cf.lightcurve_fit_save_images,
                                                     show_images=cf.lightcurve_fit_show_images,

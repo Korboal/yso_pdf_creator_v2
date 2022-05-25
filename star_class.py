@@ -320,6 +320,7 @@ class Star:
                                  cf.ir_slope_start,
                                  cf.ir_slope_end, 0)
         #mir_points_25 = np.size(np.unique(x_slope25))
+        mir_points_25 = np.size(x_slope25)
 
         x_slope20, _, __ = take_within_x_boundaries(self.x_good,
                                                     self.y_good,
@@ -327,6 +328,7 @@ class Star:
                                                     cf.ir_slope_start,
                                                     cf.ir_slope_end2, 0)
         #mir_points_20 = np.size(np.unique(x_slope20))
+        mir_points_20 = np.size(x_slope20)
 
         x_10, y_10, err_10 = take_within_x_boundaries(self.x_good,
                                                     self.y_good,
@@ -475,9 +477,31 @@ class Star:
 
         #self.ztf_g_light_curve.draw_linear_trend_removal_example()
 
-        self.ztf_r_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
+        from tools import load_data
+
+        fitted_periods = load_data("output_textfiles/2022-03-11 11_43_47.057904_total_periods_final_v10_combined.txt")
+
+        sources_id_ge3 = fitted_periods[:, 145]
+        known_periods_ztf_r = fitted_periods[:, 40].astype(float)
+
+        index_period = np.where(sources_id_ge3 == self.source_id)[0][0]
+
+        self.ztf_r_light_curve.fit_light_curve(show_variables, manual_period_guess=known_periods_ztf_r[index_period])
+
+
+
+        std_residuals = self.ztf_r_light_curve.calculate_st_dev_residuals()
+        decile_mean = self.ztf_r_light_curve.calculate_mean_decile()
+        ztf_r_median = np.median(self.ztf_r_light_curve.data_y)
+
         self.ztf_g_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
         self.ztf_i_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
+
+        self.ztf_g_light_curve.fit_result["ls_fap"], self.ztf_r_light_curve.fit_result["ls_fap"] = 0, 0
+
+        #self.ztf_r_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
+        #self.ztf_g_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
+        #self.ztf_i_light_curve.fit_light_curve(show_variables, manual_period_guess=manual_period_guess)
 
         # self.gaia_g_light_curve.show_image = show_pictures
         # self.gaia_g_light_curve.draw_raw_light_curve()
@@ -699,8 +723,9 @@ class Star:
                                 ztf_r_median_ls_power_old_normal, ztf_r_median_ls_power_new_normal,
                                 ztf_r_ls_power_arg_max_old_normal, ztf_r_ls_power_arg_max_new_normal,
                                 ztf_i_median_ls_power_old_normal, ztf_i_median_ls_power_new_normal,
-                                ztf_i_ls_power_arg_max_old_normal, ztf_i_ls_power_arg_max_new_normal
-                                ], self.ztf_output_period)
+                                ztf_i_ls_power_arg_max_old_normal, ztf_i_ls_power_arg_max_new_normal,
+                                std_residuals, decile_mean, ztf_r_median], self.ztf_output_period)
+
 
     def analyse_neowise_lightcurves(self, parsed_neowise_table, save_variables, show_variables, save_pictures, show_pictures, manual_period_guess=0):
         from tools import save_in_txt_topcat
